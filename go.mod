@@ -2,7 +2,10 @@ module github.com/gecarval/GoNotes
 
 go 1.27.4
 
-require charm.land/bubbletea/v2 v2.1.2
+require (
+	charm.land/bubbletea/v2 v2.1.2
+	github.com/mattn/go-sqlite3 v1.14.53
+)
 
 require (
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
