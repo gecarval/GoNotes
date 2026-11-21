@@ -38,18 +38,21 @@ func (s *Store) Init() (err error) {
 func (s *Store) GetNotes() (notes []Note, err error) {
 	getNotesStatement := `SELECT * FROM notes`
 	rows, err := s.conn.Query(getNotesStatement)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		if err = rows.Err(); err != nil {
+		var note Note
+		if err = rows.Scan(&note.id, &note.title, &note.body); err != nil {
 			return nil, err
 		}
-		var note Note
-		rows.Scan(&note.id, &note.title, &note.body)
 		notes = append(notes, note)
 	}
+	// rows.Err reports iteration errors only once Next has returned false,
+	// so it must be checked after the loop, not inside it.
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
 	return notes, nil
-
 }
