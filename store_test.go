@@ -85,3 +85,71 @@ func TestGetNotesScanError(t *testing.T) {
 		t.Fatal("expected a scan error")
 	}
 }
+
+func TestSaveNote(t *testing.T) {
+	tests := []struct {
+		name  string
+		saves []Note
+		want  []Note
+	}{
+		{"insert with explicit id", []Note{{7, "t", "b"}}, []Note{{7, "t", "b"}}},
+		{"update existing id",
+			[]Note{{7, "old", "old body"}, {7, "new", "new body"}},
+			[]Note{{7, "new", "new body"}}},
+		{"two distinct ids",
+			[]Note{{1, "a", "x"}, {2, "b", "y"}},
+			[]Note{{1, "a", "x"}, {2, "b", "y"}}},
+		{"empty and multi-byte strings",
+			[]Note{{3, "", ""}, {4, "日本語 ✓", "line\n🐐"}},
+			[]Note{{3, "", ""}, {4, "日本語 ✓", "line\n🐐"}}},
+		{"large body", []Note{{5, "big", strings.Repeat("x", 1<<20)}},
+			[]Note{{5, "big", strings.Repeat("x", 1<<20)}}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := newTestStore(t)
+			for _, n := range tt.saves {
+				if err := s.SaveNote(n); err != nil {
+					t.Fatalf("SaveNote(id %d): %v", n.id, err)
+				}
+			}
+			got, err := s.GetNotes()
+			if err != nil {
+				t.Fatalf("GetNotes: %v", err)
+			}
+			if len(got) != len(tt.want) {
+				t.Fatalf("got %d notes, want %d", len(got), len(tt.want))
+			}
+			for i := range got {
+				if got[i] != tt.want[i] {
+					t.Errorf("note %d = {%d %q, %d-byte body}, want {%d %q, %d-byte body}",
+						i, got[i].id, got[i].title, len(got[i].body),
+						tt.want[i].id, tt.want[i].title, len(tt.want[i].body))
+				}
+			}
+		})
+	}
+}
+
+// TestSaveNoteGeneratesID checks that a note with id 0 is stored under a
+// fresh non-zero id, and that two such saves do not overwrite each other.
+func TestSaveNoteGeneratesID(t *testing.T) {
+	s := newTestStore(t)
+	for _, title := range []string{"first", "second"} {
+		if err := s.SaveNote(Note{title: title, body: "b"}); err != nil {
+			t.Fatalf("SaveNote: %v", err)
+		}
+	}
+	got, err := s.GetNotes()
+	if err != nil {
+		t.Fatalf("GetNotes: %v", err)
+	}
+	if len(got) != 2 {
+		t.Fatalf("got %d notes, want 2", len(got))
+	}
+	for _, n := range got {
+		if n.id == 0 {
+			t.Errorf("note %q stored with id 0", n.title)
+		}
+	}
+}
