@@ -1,0 +1,6 @@
+# Build output
+/GoNotes
+
+# Local SQLite database created at runtime
+*.db
+*.db-journal
