@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	tea "charm.land/bubbletea/v2"
 )
@@ -10,13 +9,11 @@ import (
 func main() {
 	s := &Store{}
 	if err := s.Init(); err != nil {
-		fmt.Fprintln(os.Stderr, "Error: ", err)
-		os.Exit(1)
+		log.Fatalf("Error: %v", err)
 	}
 	m := newModel(s)
 	p := tea.NewProgram(m)
 	if _, err := p.Run(); err != nil {
-		fmt.Fprintln(os.Stderr, "Error: ", err)
-		os.Exit(1)
+		log.Fatalf("Error: %v", err)
 	}
 }
