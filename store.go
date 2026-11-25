@@ -63,7 +63,7 @@ func (s *Store) GetNotes() (notes []Note, err error) {
 
 // SaveNote inserts note, or updates title and body if a note with the
 // same id exists. A zero id is replaced by the current UnixNano time.
-func (s *Store) SaveNote(note Note) error {
+func (s *Store) SaveNote(note *Note) error {
 	if note.id == 0 {
 		note.id = time.Now().UTC().UnixNano()
 	}
