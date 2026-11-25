@@ -9,7 +9,7 @@ qualquer regra global de "agente que faz o trabalho".
 1. **Bubble Tea** (`charm.land/bubbletea/v2`): a arquitetura Elm (Model / Update / View), `tea.Msg`, `tea.Cmd`, `tea.Batch`, mensagens assíncronas.
 2. **Bubbles** (`charm.land/bubbles/v2`): componentes prontos (textinput, textarea, list, viewport, key bindings, help).
 3. **Lip Gloss** (`charm.land/lipgloss/v2`): estilos, cores, bordas, padding, `JoinHorizontal`/`JoinVertical`, layout que se adapta à largura do terminal.
-4. **SQL** com `database/sql` + `github.com/mattn/go-sqlite3`: schema, queries, `?` placeholders, transações, migrações, testes.
+4. **SQL** com `database/sql` + `github.com/mattn/go-sqlite3`: schema, queries, `?` placeholders, transações, migrações.
 5. **MCP** (Model Context Protocol): expor as minhas notas a um LLM através de um servidor MCP escrito em Go.
 
 ## Regras para o Claude
@@ -19,10 +19,11 @@ qualquer regra global de "agente que faz o trabalho".
 - Não correr `go get` nem `go mod tidy` para alterar dependências.
 - Não colar ficheiros inteiros nem funções completas que resolvam a tarefa.
 - Não dar a solução logo à primeira pergunta.
+- **Não criar ficheiros de teste** (`*_test.go`) nem pedir testes nos commits.
 
 ### Permitido
 - Ler o código (`Read`, `rg`) para perceber onde estou e dar feedback concreto.
-- Correr comandos só de leitura/verificação: `go build ./...`, `go vet ./...`, `go test ./...`, `gofmt -l .`.
+- Correr comandos só de leitura/verificação: `go build ./...`, `go vet ./...`, `gofmt -l .`.
 - Dar **snippets pequenos**: no máximo ~10-15 linhas, focados num único conceito.
   Preferir exemplos *análogos* (outro contexto) em vez do código exato que eu preciso.
 - Apontar para a documentação oficial (pkg.go.dev, repositórios charmbracelet, spec MCP).
@@ -48,10 +49,9 @@ Seguir o estilo do `git log`:
 - **Commits faseados**: dividir o trabalho em passos pequenos e lógicos;
   **cada commit tem de compilar** sozinho (`go build ./...`).
 - Conventional Commits: `type(scope): assunto no imperativo` (≤ ~72 chars,
-  em inglês). O corpo explica o *quê* e o *porquê*, e o que os testes provam.
+  em inglês). O corpo explica o *quê* e o *porquê*.
   Sem linhas `Co-authored-by` nem atribuição a IA.
-- Antes do merge, tudo verde: `go build`, `go vet`, `gofmt -l .` vazio,
-  `go test ./...`, `go test -race ./...`.
+- Antes do merge, tudo verde: `go build`, `go vet`, `gofmt -l .` vazio.
 - Se algum gate falhar, **não commitar**: explicar o erro e dar uma pista
   para eu corrigir.
 - Fechar com `git merge --no-ff <branch>` no `main`, `git push`, apagar o branch.
@@ -69,7 +69,6 @@ desse ponto concreto (ainda sem editar ficheiros). Isto vale só para esse pedid
 | `update.go`| Reage a mensagens/teclas (o *Update*)         |
 | `view.go`  | Desenha o ecrã (o *View*)                     |
 | `store.go` | Acesso ao SQLite (`notes.db`)                 |
-| `*_test.go`| Testes da store e do update                   |
 
 ## Roteiro sugerido
 
@@ -77,7 +76,7 @@ desse ponto concreto (ainda sem editar ficheiros). Isto vale só para esse pedid
 - [ ] Bubbles: usar `textinput`/`textarea` para criar e editar notas
 - [ ] Bubbles: `list` para navegar nas notas
 - [ ] Lip Gloss: estilizar a lista e o editor; layout em duas colunas
-- [ ] SQL: CRUD completo (create, read, update, delete) com testes
+- [ ] SQL: CRUD completo (create, read, update, delete)
 - [ ] SQL: pesquisa (`LIKE` e depois FTS5), timestamps, migrações simples
 - [ ] Bubble Tea: operações da BD como `tea.Cmd` (não bloquear a UI)
 - [ ] MCP: servidor em Go com tools `list_notes`, `read_note`, `search_notes`
