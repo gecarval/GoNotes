@@ -77,7 +77,7 @@ func bodyViewUpdate(m *model, key string) tea.Cmd {
 		if err := m.store.SaveNote(&m.currNote); err != nil {
 			log.Fatalf("Error: %v", err)
 		}
-	case "crtl+z":
+	case "ctrl+z":
 		m.textarea.SetValue(m.currNote.body)
 	default:
 		m.textarea.Value()
