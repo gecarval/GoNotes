@@ -79,8 +79,6 @@ func bodyViewUpdate(m *model, key string) tea.Cmd {
 		}
 	case "ctrl+z":
 		m.textarea.SetValue(m.currNote.body)
-	default:
-		m.textarea.Value()
 	}
 	return nil
 }
