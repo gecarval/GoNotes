@@ -10,7 +10,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		var cmd tea.Cmd
-		cmds := make([]tea.Cmd, 5)
+		cmds := make([]tea.Cmd, 0, 5)
 		cmd = modelStateMachine(&m, msg.String())
 		cmds = append(cmds, cmd)
 		m.textinput, cmd = m.textinput.Update(msg)
@@ -55,7 +55,7 @@ func titleViewUpdate(m *model, key string) tea.Cmd {
 		m.textinput.Blur()
 		m.state = listView
 	case "enter":
-		if len(m.textinput.Value()) >= 0 {
+		if m.textinput.Value() != "" {
 			m.state = bodyView
 			m.currNote.title = m.textinput.Value()
 			m.textinput.Blur()
@@ -77,7 +77,7 @@ func bodyViewUpdate(m *model, key string) tea.Cmd {
 		if err := m.store.SaveNote(&m.currNote); err != nil {
 			log.Fatalf("Error: %v", err)
 		}
-	case "crtl+z":
+	case "ctrl+z":
 		m.textarea.SetValue(m.currNote.body)
 	default:
 		m.textarea.Value()
