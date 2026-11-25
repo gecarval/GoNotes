@@ -55,7 +55,7 @@ func titleViewUpdate(m *model, key string) tea.Cmd {
 		m.textinput.Blur()
 		m.state = listView
 	case "enter":
-		if len(m.textinput.Value()) >= 0 {
+		if m.textinput.Value() != "" {
 			m.state = bodyView
 			m.currNote.title = m.textinput.Value()
 			m.textinput.Blur()
