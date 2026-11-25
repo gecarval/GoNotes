@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"charm.land/bubbles/v2/textarea"
+	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 )
 
@@ -14,11 +16,13 @@ const (
 
 type model struct {
 	state     uint
+	statefunc []func()
 	store     *Store
 	notes     []Note
 	currNote  Note
 	listIndex int
-	text      string
+	textarea  textarea.Model
+	textinput textinput.Model
 }
 
 func newModel(store *Store) model {
@@ -27,12 +31,17 @@ func newModel(store *Store) model {
 		log.Fatalf("Error: %v", err)
 	}
 	return model{
-		state: listView,
-		store: store,
-		notes: notes,
+		state:     listView,
+		store:     store,
+		notes:     notes,
+		textarea:  textarea.New(),
+		textinput: textinput.New(),
 	}
 }
 
 func (m model) Init() tea.Cmd {
-	return nil
+	return tea.Batch(
+		textinput.Blink,
+		textarea.Blink,
+	)
 }
