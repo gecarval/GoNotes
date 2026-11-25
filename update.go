@@ -10,7 +10,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		var cmd tea.Cmd
-		cmds := make([]tea.Cmd, 5)
+		cmds := make([]tea.Cmd, 0, 5)
 		cmd = modelStateMachine(&m, msg.String())
 		cmds = append(cmds, cmd)
 		m.textinput, cmd = m.textinput.Update(msg)
