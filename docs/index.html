@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - Bubble Tea, Bubbles and Lip Gloss</title>
+<link rel="stylesheet" href="common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a id="active" href="index.html">about</a><a href="examples.html">examples</a><a href="cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content">
+<p class="tagline">A quick reference for building terminal apps in Go with <b>Bubble Tea</b>, <b>Bubbles</b> and <b>Lip Gloss</b> (v2).</p>
+<div class="libs"><div class="lib-card core"><h3>Bubble Tea</h3><p>The framework. Your program is a Model with three methods: Init, Update and View. Everything that happens is a Msg; anything slow is a Cmd.</p><code>charm.land/bubbletea/v2</code></div><div class="lib-card textures"><h3>Bubbles</h3><p>Ready-made components (text inputs, lists, tables, viewports, spinners…). Each one is a tiny Bubble Tea model you embed in yours.</p><code>charm.land/bubbles/v2/…</code></div><div class="lib-card shapes"><h3>Lip Gloss</h3><p>Styling and layout. CSS-like styles (colors, padding, borders) that render to strings, plus Join/Place helpers to compose them.</p><code>charm.land/lipgloss/v2</code></div></div>
+<h2>the loop</h2>
+<p>Bubble Tea follows the Elm architecture. The runtime owns the loop: it sends every event to <code>Update</code> as a
+<code>Msg</code>, redraws with <code>View</code>, and runs any <code>Cmd</code> you return in the background. You never block
+and never draw by hand.</p>
+<div class="diagram"><svg viewBox="0 0 660 285" xmlns="http://www.w3.org/2000/svg" font-family="Courier New, monospace" font-size="15">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#505050"/></marker></defs>
+<g stroke-width="5">
+<rect x="20" y="20" width="150" height="60" fill="#ebddae" stroke="#d3b157"/>
+<rect x="20" y="112" width="150" height="60" fill="#e1e1e1" stroke="#898888"/>
+<rect x="20" y="205" width="150" height="60" fill="#ffffff" stroke="#505050"/>
+<rect x="255" y="20" width="150" height="60" fill="#f0d6d6" stroke="#e66666"/>
+<rect x="490" y="112" width="150" height="60" fill="#c8eabf" stroke="#75a06d"/>
+<rect x="255" y="205" width="150" height="60" fill="#bedce8" stroke="#5d9cbd"/>
+</g>
+<g fill="#303030" text-anchor="middle">
+<text x="95" y="47" font-weight="bold">Cmd</text><text x="95" y="66" font-size="12">func() Msg</text>
+<text x="95" y="139" font-weight="bold">Msg</text><text x="95" y="158" font-size="12">any value</text>
+<text x="95" y="232" font-weight="bold">terminal</text><text x="95" y="251" font-size="12">screen + input</text>
+<text x="330" y="47" font-weight="bold">Update</text><text x="330" y="66" font-size="12">(Model, Cmd)</text>
+<text x="565" y="139" font-weight="bold">Model</text><text x="565" y="158" font-size="12">your state</text>
+<text x="330" y="232" font-weight="bold">View</text><text x="330" y="251" font-size="12">() tea.View</text>
+</g>
+<g stroke="#505050" stroke-width="2.5" fill="none" marker-end="url(#ar)">
+<path d="M172,135 C215,135 215,60 251,55"/>
+<path d="M407,55 C470,58 520,80 545,108"/>
+<path d="M545,176 C520,215 470,235 409,235"/>
+<path d="M253,235 L174,235"/>
+<path d="M253,35 L174,35"/>
+<path d="M95,82 L95,108" stroke-dasharray="5 4"/>
+<path d="M95,203 L95,176"/>
+</g>
+<g fill="#828282" font-size="12">
+<text x="180" y="28">returns</text>
+<text x="104" y="100">result (goroutine)</text>
+<text x="102" y="192">keys, mouse, resize</text>
+<text x="182" y="228">draws</text>
+<text x="408" y="104">new state</text>
+<text x="556" y="200">read by</text>
+</g>
+</svg></div>
+<pre class="snippet"><code><span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+    <span class="k">switch</span> msg := msg.(<span class="k">type</span>) {
+    <span class="k">case</span> tea.<span class="t">KeyPressMsg</span>:
+        <span class="k">if</span> msg.<span class="f">String</span>() == <span class="s">&quot;q&quot;</span> {
+            <span class="k">return</span> m, tea.<span class="t">Quit</span>           <span class="c">// a Cmd: &quot;please quit&quot;</span>
+        }
+    <span class="k">case</span> tea.<span class="t">WindowSizeMsg</span>:
+        m.width = msg.<span class="t">Width</span>              <span class="c">// remember the size for View</span>
+    }
+    <span class="k">var</span> cmd tea.<span class="t">Cmd</span>
+    m.input, cmd = m.input.<span class="f">Update</span>(msg)   <span class="c">// forward to a Bubbles component</span>
+    <span class="k">return</span> m, cmd
+}</code></pre>
+<h2>learning resources</h2>
+<div class="tiles"><a class="tile core" href="cheatsheet.html">cheatsheet</a><a class="tile shapes" href="examples.html">28 examples</a><a class="tile textures" href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">bubbletea on pkg.go.dev</a><a class="tile text" href="https://pkg.go.dev/charm.land/bubbles/v2" target="_blank">bubbles on pkg.go.dev</a><a class="tile models" href="https://pkg.go.dev/charm.land/lipgloss/v2" target="_blank">lipgloss on pkg.go.dev</a><a class="tile audio" href="https://github.com/charmbracelet/bubbletea/tree/main/examples" target="_blank">official examples</a><a class="tile shaders" href="https://github.com/charmbracelet/bubbletea/blob/main/UPGRADE_GUIDE_V2.md" target="_blank">v1 → v2 upgrade guide</a></div>
+<h2>how this site is organized</h2>
+<ul>
+<li><b>cheatsheet</b>: every exported function of the three libraries, grouped by topic, one line each with a short
+description (extracted with <code>go doc</code> from the exact versions in this repo's <code>go.mod</code>).</li>
+<li><b>examples</b>: small, complete programs for the functions that only make sense together (Focus + Blink,
+Tick loops, Batch vs Sequence, list + WindowSizeMsg + SetSize, FrameMsg for progress…), colored by module and rated by
+difficulty. Thumbnails are the real <code>View()</code> output.</li>
+<li>Names in the cheatsheet that appear in an example link to the examples that use them, and each example links
+back to the cheatsheet entries it uses.</li>
+</ul>
+<h2>versions</h2>
+<ul><li>charm.land/bubbletea/v2 v2.1.2</li><li>charm.land/bubbles/v2 v2.2.2</li><li>charm.land/lipgloss/v2 v2.0.6</li></ul>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+
+</body>
+</html>
