@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - lipgloss borders</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example shapes">
+<div class="exnav"><a href="tea_program_send.html">← tea_program_send</a><a href="../examples.html">all examples</a><a href="lipgloss_styles.html">lipgloss_styles →</a></div>
+<h1><span class="lib">Lip Gloss</span> · borders gallery <span class="difficulty">⭐☆☆☆</span></h1>
+<p class="exdesc">Border sets the border shape (and optionally which sides to draw). BorderForeground colors it. Borders add to the rendered size, padding sits inside the border and margin outside.</p>
+
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full"><span style="color:#ff5f87">┌───────────┐</span><span style="color:#5fafff">╭───────────╮</span><span style="color:#87d787">┏━━━━━━━━━━━┓</span>
+<span style="color:#ff5f87">│</span>  Normal   <span style="color:#ff5f87">│</span><span style="color:#5fafff">│</span>  Rounded  <span style="color:#5fafff">│</span><span style="color:#87d787">┃</span>   Thick   <span style="color:#87d787">┃</span>
+<span style="color:#ff5f87">└───────────┘</span><span style="color:#5fafff">╰───────────╯</span><span style="color:#87d787">┗━━━━━━━━━━━┛</span>
+<span style="color:#ffd75f">╔═══════════╗</span><span style="color:#af87ff">█████████████</span><span style="color:#d0d0d0">+-----------+</span>
+<span style="color:#ffd75f">║</span>  Double   <span style="color:#ffd75f">║</span><span style="color:#af87ff">█</span>   Block   <span style="color:#af87ff">█</span><span style="color:#d0d0d0">|</span>   ASCII   <span style="color:#d0d0d0">|</span>
+<span style="color:#ffd75f">╚═══════════╝</span><span style="color:#af87ff">█████████████</span><span style="color:#d0d0d0">+-----------+</span>
+bottom border only
+<span style="color:#ff5f87">──────────────────</span></pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-NormalBorder">lipgloss.NormalBorder</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-RoundedBorder">lipgloss.RoundedBorder</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-ThickBorder">lipgloss.ThickBorder</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-DoubleBorder">lipgloss.DoubleBorder</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-BlockBorder">lipgloss.BlockBorder</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-ASCIIBorder">lipgloss.ASCIIBorder</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-NewStyle">lipgloss.NewStyle</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Border">lipgloss.Border</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-BorderForeground">lipgloss.BorderForeground</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Color">lipgloss.Color</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Padding">lipgloss.Padding</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Width">lipgloss.Width</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Align">lipgloss.Align</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Render">lipgloss.Render</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-JoinHorizontal">lipgloss.JoinHorizontal</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Println">lipgloss.Println</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-JoinVertical">lipgloss.JoinVertical</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir lipgloss_borders &amp;&amp; cd lipgloss_borders
+go mod init lipgloss_borders
+# save the code below as main.go, then:
+go get charm.land/lipgloss/v2@v2.0.6
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50</pre><pre class="code"><code><span class="c">// Lip Gloss example - borders gallery</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★☆☆☆] 1/4</span>
+<span class="c">//</span>
+<span class="c">// Border sets the border shape (and optionally which sides to draw).</span>
+<span class="c">// BorderForeground colors it. Borders add to the rendered size, padding</span>
+<span class="c">// sits inside the border and margin outside.</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;charm.land/lipgloss/v2&quot;</span>
+)
+
+<span class="k">func</span> <span class="f">main</span>() {
+	borders := []<span class="k">struct</span> {
+		name <span class="b">string</span>
+		b    lipgloss.<span class="t">Border</span>
+	}{
+		{<span class="s">&quot;Normal&quot;</span>, lipgloss.<span class="f">NormalBorder</span>()},
+		{<span class="s">&quot;Rounded&quot;</span>, lipgloss.<span class="f">RoundedBorder</span>()},
+		{<span class="s">&quot;Thick&quot;</span>, lipgloss.<span class="f">ThickBorder</span>()},
+		{<span class="s">&quot;Double&quot;</span>, lipgloss.<span class="f">DoubleBorder</span>()},
+		{<span class="s">&quot;Block&quot;</span>, lipgloss.<span class="f">BlockBorder</span>()},
+		{<span class="s">&quot;ASCII&quot;</span>, lipgloss.<span class="f">ASCIIBorder</span>()},
+	}
+
+	colors := []<span class="b">string</span>{<span class="s">&quot;#FF5F87&quot;</span>, <span class="s">&quot;#5FAFFF&quot;</span>, <span class="s">&quot;#87D787&quot;</span>, <span class="s">&quot;#FFD75F&quot;</span>, <span class="s">&quot;#AF87FF&quot;</span>, <span class="s">&quot;#D0D0D0&quot;</span>}
+
+	<span class="k">var</span> boxes []<span class="b">string</span>
+	<span class="k">for</span> i, item := <span class="k">range</span> borders {
+		style := lipgloss.<span class="f">NewStyle</span>().
+			<span class="f">Border</span>(item.b).
+			<span class="f">BorderForeground</span>(lipgloss.<span class="f">Color</span>(<span class="f">colors</span>[i])).
+			<span class="f">Padding</span>(<span class="n">0</span>, <span class="n">1</span>).
+			<span class="f">Width</span>(<span class="n">13</span>).
+			<span class="f">Align</span>(lipgloss.<span class="t">Center</span>)
+		boxes = <span class="b">append</span>(boxes, style.<span class="f">Render</span>(item.name))
+	}
+
+	<span class="c">// Three boxes per row.</span>
+	row1 := lipgloss.<span class="f">JoinHorizontal</span>(lipgloss.<span class="t">Top</span>, <span class="f">boxes</span>[:<span class="n">3</span>]...)
+	row2 := lipgloss.<span class="f">JoinHorizontal</span>(lipgloss.<span class="t">Top</span>, <span class="f">boxes</span>[<span class="n">3</span>:]...)
+	lipgloss.<span class="f">Println</span>(lipgloss.<span class="f">JoinVertical</span>(lipgloss.<span class="t">Left</span>, row1, row2))
+
+	<span class="c">// Only some sides: Border(b, top, right, bottom, left)</span>
+	underline := lipgloss.<span class="f">NewStyle</span>().
+		<span class="f">Border</span>(lipgloss.<span class="f">NormalBorder</span>(), <span class="b">false</span>, <span class="b">false</span>, <span class="b">true</span>, <span class="b">false</span>).
+		<span class="f">BorderForeground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#FF5F87&quot;</span>))
+	lipgloss.<span class="f">Println</span>(underline.<span class="f">Render</span>(<span class="s">&quot;bottom border only&quot;</span>))
+}</code></pre></div>
+<div class="exnav"><a href="tea_program_send.html">← tea_program_send</a><a href="../examples.html">all examples</a><a href="lipgloss_styles.html">lipgloss_styles →</a></div>
+<script type="text/plain" id="rawsrc">// Lip Gloss example - borders gallery
+//
+// Example complexity rating: [★☆☆☆] 1/4
+//
+// Border sets the border shape (and optionally which sides to draw).
+// BorderForeground colors it. Borders add to the rendered size, padding
+// sits inside the border and margin outside.
+package main
+
+import (
+	"charm.land/lipgloss/v2"
+)
+
+func main() {
+	borders := []struct {
+		name string
+		b    lipgloss.Border
+	}{
+		{"Normal", lipgloss.NormalBorder()},
+		{"Rounded", lipgloss.RoundedBorder()},
+		{"Thick", lipgloss.ThickBorder()},
+		{"Double", lipgloss.DoubleBorder()},
+		{"Block", lipgloss.BlockBorder()},
+		{"ASCII", lipgloss.ASCIIBorder()},
+	}
+
+	colors := []string{"#FF5F87", "#5FAFFF", "#87D787", "#FFD75F", "#AF87FF", "#D0D0D0"}
+
+	var boxes []string
+	for i, item := range borders {
+		style := lipgloss.NewStyle().
+			Border(item.b).
+			BorderForeground(lipgloss.Color(colors[i])).
+			Padding(0, 1).
+			Width(13).
+			Align(lipgloss.Center)
+		boxes = append(boxes, style.Render(item.name))
+	}
+
+	// Three boxes per row.
+	row1 := lipgloss.JoinHorizontal(lipgloss.Top, boxes[:3]...)
+	row2 := lipgloss.JoinHorizontal(lipgloss.Top, boxes[3:]...)
+	lipgloss.Println(lipgloss.JoinVertical(lipgloss.Left, row1, row2))
+
+	// Only some sides: Border(b, top, right, bottom, left)
+	underline := lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder(), false, false, true, false).
+		BorderForeground(lipgloss.Color("#FF5F87"))
+	lipgloss.Println(underline.Render("bottom border only"))
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

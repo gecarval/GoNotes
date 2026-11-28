@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - textinput form</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example textures">
+<div class="exnav"><a href="textarea_basic.html">← textarea_basic</a><a href="../examples.html">all examples</a><a href="list_default.html">list_default →</a></div>
+<h1><span class="lib">Bubbles</span> · multi-field form with focus cycling <span class="difficulty">⭐⭐⭐☆</span></h1>
+<p class="exdesc">Several inputs, only one focused at a time. Moving focus means Blur() on the old one and Focus() on the new one. Each input&#x27;s Update returns a Cmd, so collect them all and return them with tea.Batch. EchoPassword hides the typed characters.</p>
+<p class="keys">Keys: tab/shift+tab move, enter next/submit, esc quit</p>
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full">Create account
+
+<span style="color:#6c6c6c">Name:</span>
+<span style="color:#e5e5e5">&gt; </span><span style="color:#e5e5e5">Ada</span><span style="color:#e5e5e5"> </span><span style="color:#e5e5e5">                           </span>
+
+<span style="color:#6c6c6c">Email:</span>
+<span style="color:#e5e5e5">&gt; </span><span style="color:#e5e5e5">ada@example.com</span><span style="color:#e5e5e5"> </span><span style="color:#e5e5e5">               </span>
+
+<span style="color:#ff5f87">Password:</span>
+<span style="color:#e5e5e5">&gt; </span>••••••<span style="color:#1e1e1e;background:#e5e5e5"> </span>                        
+
+<span style="color:#6c6c6c">tab/shift+tab move • enter next • esc quit</span></pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><span class="chip type">textinput.Model</span> <a class="chip textures" href="../cheatsheet.html#fn-textinput-New">textinput.New</a> <span class="chip type">textinput.EchoPassword</span> <span class="chip type">tea.Cmd</span> <a class="chip textures" href="../cheatsheet.html#fn-textinput-Blink">textinput.Blink</a> <span class="chip type">tea.Msg</span> <span class="chip type">tea.Model</span> <span class="chip type">tea.KeyPressMsg</span> <a class="chip textures" href="../cheatsheet.html#fn-tea-Quit">tea.Quit</a> <a class="chip textures" href="../cheatsheet.html#fn-tea-Batch">tea.Batch</a> <span class="chip type">tea.View</span> <a class="chip textures" href="../cheatsheet.html#fn-tea-NewView">tea.NewView</a> <a class="chip textures" href="../cheatsheet.html#fn-tea-NewProgram">tea.NewProgram</a> <a class="chip textures" href="../cheatsheet.html#fn-lipgloss-NewStyle">lipgloss.NewStyle</a> <a class="chip textures" href="../cheatsheet.html#fn-lipgloss-Foreground">lipgloss.Foreground</a> <a class="chip textures" href="../cheatsheet.html#fn-lipgloss-Color">lipgloss.Color</a> <a class="chip textures" href="../cheatsheet.html#fn-textinput-SetWidth">textinput.SetWidth</a> <a class="chip textures" href="../cheatsheet.html#fn-textinput-Focus">textinput.Focus</a> <a class="chip textures" href="../cheatsheet.html#fn-textinput-Blur">textinput.Blur</a> <a class="chip textures" href="../cheatsheet.html#fn-lipgloss-Render">lipgloss.Render</a> <a class="chip textures" href="../cheatsheet.html#fn-textinput-View">textinput.View</a> <a class="chip textures" href="../cheatsheet.html#fn-textinput-Value">textinput.Value</a> <a class="chip textures" href="../cheatsheet.html#fn-tea-Run">tea.Run</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir textinput_form &amp;&amp; cd textinput_form
+go mod init textinput_form
+# save the code below as main.go, then:
+go get charm.land/bubbletea/v2@v2.1.2 charm.land/lipgloss/v2@v2.0.6 charm.land/bubbles/v2@v2.2.2
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115</pre><pre class="code"><code><span class="c">// Bubbles example - multi-field form with focus cycling</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★★★☆] 3/4</span>
+<span class="c">//</span>
+<span class="c">// Several inputs, only one focused at a time. Moving focus means Blur()</span>
+<span class="c">// on the old one and Focus() on the new one. Each input&#x27;s Update returns</span>
+<span class="c">// a Cmd, so collect them all and return them with tea.Batch.</span>
+<span class="c">// EchoPassword hides the typed characters.</span>
+<span class="c">//</span>
+<span class="c">// Keys: tab/shift+tab move, enter next/submit, esc quit</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+	<span class="s">&quot;strings&quot;</span>
+
+	<span class="s">&quot;charm.land/bubbles/v2/textinput&quot;</span>
+	tea <span class="s">&quot;charm.land/bubbletea/v2&quot;</span>
+	<span class="s">&quot;charm.land/lipgloss/v2&quot;</span>
+)
+
+<span class="k">var</span> (
+	focused = lipgloss.<span class="f">NewStyle</span>().<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#FF5F87&quot;</span>))
+	blurred = lipgloss.<span class="f">NewStyle</span>().<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#6C6C6C&quot;</span>))
+)
+
+<span class="k">type</span> model <span class="k">struct</span> {
+	inputs    []textinput.<span class="t">Model</span>
+	focus     <span class="b">int</span>
+	submitted <span class="b">bool</span>
+}
+
+<span class="k">func</span> <span class="f">initialModel</span>() model {
+	labels := []<span class="b">string</span>{<span class="s">&quot;Name&quot;</span>, <span class="s">&quot;Email&quot;</span>, <span class="s">&quot;Password&quot;</span>}
+	m := model{inputs: <span class="b">make</span>([]textinput.<span class="t">Model</span>, <span class="b">len</span>(labels))}
+	<span class="k">for</span> i, label := <span class="k">range</span> labels {
+		t := textinput.<span class="f">New</span>()
+		t.<span class="t">Placeholder</span> = label
+		t.<span class="f">SetWidth</span>(<span class="n">30</span>)
+		<span class="k">if</span> label == <span class="s">&quot;Password&quot;</span> {
+			t.<span class="t">EchoMode</span> = textinput.<span class="t">EchoPassword</span>
+			t.<span class="t">EchoCharacter</span> = <span class="s">&#x27;•&#x27;</span>
+		}
+		m.<span class="f">inputs</span>[i] = t
+	}
+	m.<span class="f">inputs</span>[<span class="n">0</span>].<span class="f">Focus</span>()
+	<span class="k">return</span> m
+}
+
+<span class="k">func</span> (m model) <span class="f">Init</span>() tea.<span class="t">Cmd</span> { <span class="k">return</span> textinput.<span class="t">Blink</span> }
+
+<span class="c">// setFocus blurs every input except i.</span>
+<span class="k">func</span> (m *model) <span class="f">setFocus</span>(i <span class="b">int</span>) tea.<span class="t">Cmd</span> {
+	m.focus = (i + <span class="b">len</span>(m.inputs)) % <span class="b">len</span>(m.inputs) <span class="c">// wrap around</span>
+	<span class="k">var</span> cmd tea.<span class="t">Cmd</span>
+	<span class="k">for</span> j := <span class="k">range</span> m.inputs {
+		<span class="k">if</span> j == m.focus {
+			cmd = m.<span class="f">inputs</span>[j].<span class="f">Focus</span>()
+		} <span class="k">else</span> {
+			m.<span class="f">inputs</span>[j].<span class="f">Blur</span>()
+		}
+	}
+	<span class="k">return</span> cmd
+}
+
+<span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+	<span class="k">if</span> key, ok := msg.(tea.<span class="t">KeyPressMsg</span>); ok {
+		<span class="k">switch</span> key.<span class="f">String</span>() {
+		<span class="k">case</span> <span class="s">&quot;esc&quot;</span>, <span class="s">&quot;ctrl+c&quot;</span>:
+			<span class="k">return</span> m, tea.<span class="t">Quit</span>
+		<span class="k">case</span> <span class="s">&quot;tab&quot;</span>, <span class="s">&quot;down&quot;</span>:
+			<span class="k">return</span> m, m.<span class="f">setFocus</span>(m.focus + <span class="n">1</span>)
+		<span class="k">case</span> <span class="s">&quot;shift+tab&quot;</span>, <span class="s">&quot;up&quot;</span>:
+			<span class="k">return</span> m, m.<span class="f">setFocus</span>(m.focus - <span class="n">1</span>)
+		<span class="k">case</span> <span class="s">&quot;enter&quot;</span>:
+			<span class="k">if</span> m.focus == <span class="b">len</span>(m.inputs)-<span class="n">1</span> {
+				m.submitted = <span class="b">true</span>
+				<span class="k">return</span> m, <span class="b">nil</span>
+			}
+			<span class="k">return</span> m, m.<span class="f">setFocus</span>(m.focus + <span class="n">1</span>)
+		}
+	}
+
+	<span class="c">// Update all inputs (only the focused one reacts to keys).</span>
+	cmds := <span class="b">make</span>([]tea.<span class="t">Cmd</span>, <span class="b">len</span>(m.inputs))
+	<span class="k">for</span> i := <span class="k">range</span> m.inputs {
+		m.<span class="f">inputs</span>[i], <span class="f">cmds</span>[i] = m.<span class="f">inputs</span>[i].<span class="f">Update</span>(msg)
+	}
+	<span class="k">return</span> m, tea.<span class="f">Batch</span>(cmds...)
+}
+
+<span class="k">func</span> (m model) <span class="f">View</span>() tea.<span class="t">View</span> {
+	<span class="k">var</span> b strings.<span class="t">Builder</span>
+	b.<span class="f">WriteString</span>(<span class="s">&quot;Create account\n\n&quot;</span>)
+	<span class="k">for</span> i, in := <span class="k">range</span> m.inputs {
+		style := blurred
+		<span class="k">if</span> i == m.focus {
+			style = focused
+		}
+		b.<span class="f">WriteString</span>(style.<span class="f">Render</span>(in.<span class="t">Placeholder</span>+<span class="s">&quot;:&quot;</span>) + <span class="s">&quot;\n&quot;</span> + in.<span class="f">View</span>() + <span class="s">&quot;\n\n&quot;</span>)
+	}
+	<span class="k">if</span> m.submitted {
+		b.<span class="f">WriteString</span>(focused.<span class="f">Render</span>(fmt.<span class="f">Sprintf</span>(<span class="s">&quot;Welcome, %s!&quot;</span>, m.<span class="f">inputs</span>[<span class="n">0</span>].<span class="f">Value</span>())) + <span class="s">&quot;\n\n&quot;</span>)
+	}
+	b.<span class="f">WriteString</span>(blurred.<span class="f">Render</span>(<span class="s">&quot;tab/shift+tab move • enter next • esc quit&quot;</span>))
+	<span class="k">return</span> tea.<span class="f">NewView</span>(b.<span class="f">String</span>())
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="k">if</span> _, err := tea.<span class="f">NewProgram</span>(<span class="f">initialModel</span>()).<span class="f">Run</span>(); err != <span class="b">nil</span> {
+		fmt.<span class="f">Println</span>(<span class="s">&quot;error:&quot;</span>, err)
+		os.<span class="f">Exit</span>(<span class="n">1</span>)
+	}
+}</code></pre></div>
+<div class="exnav"><a href="textarea_basic.html">← textarea_basic</a><a href="../examples.html">all examples</a><a href="list_default.html">list_default →</a></div>
+<script type="text/plain" id="rawsrc">// Bubbles example - multi-field form with focus cycling
+//
+// Example complexity rating: [★★★☆] 3/4
+//
+// Several inputs, only one focused at a time. Moving focus means Blur()
+// on the old one and Focus() on the new one. Each input's Update returns
+// a Cmd, so collect them all and return them with tea.Batch.
+// EchoPassword hides the typed characters.
+//
+// Keys: tab/shift+tab move, enter next/submit, esc quit
+package main
+
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+)
+
+var (
+	focused = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF5F87"))
+	blurred = lipgloss.NewStyle().Foreground(lipgloss.Color("#6C6C6C"))
+)
+
+type model struct {
+	inputs    []textinput.Model
+	focus     int
+	submitted bool
+}
+
+func initialModel() model {
+	labels := []string{"Name", "Email", "Password"}
+	m := model{inputs: make([]textinput.Model, len(labels))}
+	for i, label := range labels {
+		t := textinput.New()
+		t.Placeholder = label
+		t.SetWidth(30)
+		if label == "Password" {
+			t.EchoMode = textinput.EchoPassword
+			t.EchoCharacter = '•'
+		}
+		m.inputs[i] = t
+	}
+	m.inputs[0].Focus()
+	return m
+}
+
+func (m model) Init() tea.Cmd { return textinput.Blink }
+
+// setFocus blurs every input except i.
+func (m *model) setFocus(i int) tea.Cmd {
+	m.focus = (i + len(m.inputs)) % len(m.inputs) // wrap around
+	var cmd tea.Cmd
+	for j := range m.inputs {
+		if j == m.focus {
+			cmd = m.inputs[j].Focus()
+		} else {
+			m.inputs[j].Blur()
+		}
+	}
+	return cmd
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if key, ok := msg.(tea.KeyPressMsg); ok {
+		switch key.String() {
+		case "esc", "ctrl+c":
+			return m, tea.Quit
+		case "tab", "down":
+			return m, m.setFocus(m.focus + 1)
+		case "shift+tab", "up":
+			return m, m.setFocus(m.focus - 1)
+		case "enter":
+			if m.focus == len(m.inputs)-1 {
+				m.submitted = true
+				return m, nil
+			}
+			return m, m.setFocus(m.focus + 1)
+		}
+	}
+
+	// Update all inputs (only the focused one reacts to keys).
+	cmds := make([]tea.Cmd, len(m.inputs))
+	for i := range m.inputs {
+		m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
+	}
+	return m, tea.Batch(cmds...)
+}
+
+func (m model) View() tea.View {
+	var b strings.Builder
+	b.WriteString("Create account\n\n")
+	for i, in := range m.inputs {
+		style := blurred
+		if i == m.focus {
+			style = focused
+		}
+		b.WriteString(style.Render(in.Placeholder+":") + "\n" + in.View() + "\n\n")
+	}
+	if m.submitted {
+		b.WriteString(focused.Render(fmt.Sprintf("Welcome, %s!", m.inputs[0].Value())) + "\n\n")
+	}
+	b.WriteString(blurred.Render("tab/shift+tab move • enter next • esc quit"))
+	return tea.NewView(b.String())
+}
+
+func main() {
+	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

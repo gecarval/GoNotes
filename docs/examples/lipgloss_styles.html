@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - lipgloss styles</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example shapes">
+<div class="exnav"><a href="lipgloss_borders.html">← lipgloss_borders</a><a href="../examples.html">all examples</a><a href="lipgloss_colors.html">lipgloss_colors →</a></div>
+<h1><span class="lib">Lip Gloss</span> · basic styles <span class="difficulty">⭐☆☆☆</span></h1>
+<p class="exdesc">A lipgloss.Style is an immutable value: every method returns a NEW style, so you can chain calls and derive variants from a base style. Render applies the style to a string and returns the ANSI result.</p>
+
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full"><span style="background:#7d56f4">  </span><span style="color:#fafafa;background:#7d56f4;font-weight:bold">Lip Gloss</span><span style="background:#7d56f4">  </span>
+             
+  <span style="color:#ffb86c;font-style:italic">italic + orange</span>  
+                   
+  <span style="color:#50fa7b;text-decoration:underline">u</span><span style="color:#50fa7b;text-decoration:underline">n</span><span style="color:#50fa7b;text-decoration:underline">d</span><span style="color:#50fa7b;text-decoration:underline">e</span><span style="color:#50fa7b;text-decoration:underline">r</span><span style="color:#50fa7b;text-decoration:underline">l</span><span style="color:#50fa7b;text-decoration:underline">i</span><span style="color:#50fa7b;text-decoration:underline">n</span><span style="color:#50fa7b;text-decoration:underline">e</span><span style="color:#50fa7b;text-decoration:underline">d</span><span style="color:#50fa7b;text-decoration:underline"> </span><span style="color:#50fa7b;text-decoration:underline">+</span><span style="color:#50fa7b;text-decoration:underline"> </span><span style="color:#50fa7b;text-decoration:underline">g</span><span style="color:#50fa7b;text-decoration:underline">r</span><span style="color:#50fa7b;text-decoration:underline">e</span><span style="color:#50fa7b;text-decoration:underline">e</span><span style="color:#50fa7b;text-decoration:underline">n</span>  
+                      
+  <span style="opacity:.55;text-decoration:line-through">f</span><span style="opacity:.55;text-decoration:line-through">a</span><span style="opacity:.55;text-decoration:line-through">i</span><span style="opacity:.55;text-decoration:line-through">n</span><span style="opacity:.55;text-decoration:line-through">t</span><span style="text-decoration:line-through"> </span><span style="opacity:.55;text-decoration:line-through">+</span><span style="text-decoration:line-through"> </span><span style="opacity:.55;text-decoration:line-through">s</span><span style="opacity:.55;text-decoration:line-through">t</span><span style="opacity:.55;text-decoration:line-through">r</span><span style="opacity:.55;text-decoration:line-through">i</span><span style="opacity:.55;text-decoration:line-through">k</span><span style="opacity:.55;text-decoration:line-through">e</span><span style="opacity:.55;text-decoration:line-through">t</span><span style="opacity:.55;text-decoration:line-through">h</span><span style="opacity:.55;text-decoration:line-through">r</span><span style="opacity:.55;text-decoration:line-through">o</span><span style="opacity:.55;text-decoration:line-through">u</span><span style="opacity:.55;text-decoration:line-through">g</span><span style="opacity:.55;text-decoration:line-through">h</span>  
+                         
+<span style="color:#1e1e1e;background:#d0d0d0">    </span><span style="color:#1e1e1e;background:#d0d0d0">centered in 30 columns</span><span style="color:#1e1e1e;background:#d0d0d0">    </span></pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-NewStyle">lipgloss.NewStyle</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Padding">lipgloss.Padding</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-MarginBottom">lipgloss.MarginBottom</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Bold">lipgloss.Bold</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Foreground">lipgloss.Foreground</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Color">lipgloss.Color</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Background">lipgloss.Background</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Italic">lipgloss.Italic</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Underline">lipgloss.Underline</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Faint">lipgloss.Faint</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Strikethrough">lipgloss.Strikethrough</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Println">lipgloss.Println</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Render">lipgloss.Render</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Width">lipgloss.Width</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Align">lipgloss.Align</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Reverse">lipgloss.Reverse</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir lipgloss_styles &amp;&amp; cd lipgloss_styles
+go mod init lipgloss_styles
+# save the code below as main.go, then:
+go get charm.land/lipgloss/v2@v2.0.6
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42</pre><pre class="code"><code><span class="c">// Lip Gloss example - basic styles</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★☆☆☆] 1/4</span>
+<span class="c">//</span>
+<span class="c">// A lipgloss.Style is an immutable value: every method returns a NEW</span>
+<span class="c">// style, so you can chain calls and derive variants from a base style.</span>
+<span class="c">// Render applies the style to a string and returns the ANSI result.</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;charm.land/lipgloss/v2&quot;</span>
+)
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="c">// A base style...</span>
+	base := lipgloss.<span class="f">NewStyle</span>().
+		<span class="f">Padding</span>(<span class="n">0</span>, <span class="n">2</span>). <span class="c">// 0 rows top/bottom, 2 columns left/right</span>
+		<span class="f">MarginBottom</span>(<span class="n">1</span>)
+
+	<span class="c">// ...and variants derived from it (base is not modified).</span>
+	title := base.
+		<span class="f">Bold</span>(<span class="b">true</span>).
+		<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#FAFAFA&quot;</span>)).
+		<span class="f">Background</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#7D56F4&quot;</span>))
+
+	warning := base.
+		<span class="f">Italic</span>(<span class="b">true</span>).
+		<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#FFB86C&quot;</span>))
+
+	ok := base.<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#50FA7B&quot;</span>)).<span class="f">Underline</span>(<span class="b">true</span>)
+	muted := base.<span class="f">Faint</span>(<span class="b">true</span>).<span class="f">Strikethrough</span>(<span class="b">true</span>)
+
+	<span class="c">// lipgloss.Println downsamples colors to what the terminal supports.</span>
+	lipgloss.<span class="f">Println</span>(title.<span class="f">Render</span>(<span class="s">&quot;Lip Gloss&quot;</span>))
+	lipgloss.<span class="f">Println</span>(warning.<span class="f">Render</span>(<span class="s">&quot;italic + orange&quot;</span>))
+	lipgloss.<span class="f">Println</span>(ok.<span class="f">Render</span>(<span class="s">&quot;underlined + green&quot;</span>))
+	lipgloss.<span class="f">Println</span>(muted.<span class="f">Render</span>(<span class="s">&quot;faint + strikethrough&quot;</span>))
+
+	<span class="c">// Width + Align: the text is centered inside 30 cells.</span>
+	box := lipgloss.<span class="f">NewStyle</span>().<span class="f">Width</span>(<span class="n">30</span>).<span class="f">Align</span>(lipgloss.<span class="t">Center</span>).<span class="f">Reverse</span>(<span class="b">true</span>)
+	lipgloss.<span class="f">Println</span>(box.<span class="f">Render</span>(<span class="s">&quot;centered in 30 columns&quot;</span>))
+}</code></pre></div>
+<div class="exnav"><a href="lipgloss_borders.html">← lipgloss_borders</a><a href="../examples.html">all examples</a><a href="lipgloss_colors.html">lipgloss_colors →</a></div>
+<script type="text/plain" id="rawsrc">// Lip Gloss example - basic styles
+//
+// Example complexity rating: [★☆☆☆] 1/4
+//
+// A lipgloss.Style is an immutable value: every method returns a NEW
+// style, so you can chain calls and derive variants from a base style.
+// Render applies the style to a string and returns the ANSI result.
+package main
+
+import (
+	"charm.land/lipgloss/v2"
+)
+
+func main() {
+	// A base style...
+	base := lipgloss.NewStyle().
+		Padding(0, 2). // 0 rows top/bottom, 2 columns left/right
+		MarginBottom(1)
+
+	// ...and variants derived from it (base is not modified).
+	title := base.
+		Bold(true).
+		Foreground(lipgloss.Color("#FAFAFA")).
+		Background(lipgloss.Color("#7D56F4"))
+
+	warning := base.
+		Italic(true).
+		Foreground(lipgloss.Color("#FFB86C"))
+
+	ok := base.Foreground(lipgloss.Color("#50FA7B")).Underline(true)
+	muted := base.Faint(true).Strikethrough(true)
+
+	// lipgloss.Println downsamples colors to what the terminal supports.
+	lipgloss.Println(title.Render("Lip Gloss"))
+	lipgloss.Println(warning.Render("italic + orange"))
+	lipgloss.Println(ok.Render("underlined + green"))
+	lipgloss.Println(muted.Render("faint + strikethrough"))
+
+	// Width + Align: the text is centered inside 30 cells.
+	box := lipgloss.NewStyle().Width(30).Align(lipgloss.Center).Reverse(true)
+	lipgloss.Println(box.Render("centered in 30 columns"))
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

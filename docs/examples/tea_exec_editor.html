@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - tea exec editor</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example core">
+<div class="exnav"><a href="tea_batch_sequence.html">← tea_batch_sequence</a><a href="../examples.html">all examples</a><a href="tea_program_send.html">tea_program_send →</a></div>
+<h1><span class="lib">Bubble Tea</span> · run an external program ($EDITOR) <span class="difficulty">⭐⭐⭐☆</span></h1>
+<p class="exdesc">tea.ExecProcess pauses the program, gives the terminal to another interactive process (vim, nano, less...) and resumes when it exits. The callback turns the exit error into a message for Update.</p>
+<p class="keys">Keys: e open $EDITOR on a temp file, q quit</p>
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full">Your text:
+
+(empty)
+
+e edit in $EDITOR • q quit</pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><span class="chip type">tea.Cmd</span> <a class="chip core" href="../cheatsheet.html#fn-tea-ExecProcess">tea.ExecProcess</a> <span class="chip type">tea.Msg</span> <span class="chip type">tea.Model</span> <span class="chip type">tea.KeyPressMsg</span> <a class="chip core" href="../cheatsheet.html#fn-tea-Quit">tea.Quit</a> <span class="chip type">tea.View</span> <a class="chip core" href="../cheatsheet.html#fn-tea-NewView">tea.NewView</a> <a class="chip core" href="../cheatsheet.html#fn-tea-NewProgram">tea.NewProgram</a> <a class="chip core" href="../cheatsheet.html#fn-tea-Run">tea.Run</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir tea_exec_editor &amp;&amp; cd tea_exec_editor
+go mod init tea_exec_editor
+# save the code below as main.go, then:
+go get charm.land/bubbletea/v2@v2.1.2
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88</pre><pre class="code"><code><span class="c">// Bubble Tea example - run an external program ($EDITOR)</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★★★☆] 3/4</span>
+<span class="c">//</span>
+<span class="c">// tea.ExecProcess pauses the program, gives the terminal to another</span>
+<span class="c">// interactive process (vim, nano, less...) and resumes when it exits.</span>
+<span class="c">// The callback turns the exit error into a message for Update.</span>
+<span class="c">//</span>
+<span class="c">// Keys: e open $EDITOR on a temp file, q quit</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+	<span class="s">&quot;os/exec&quot;</span>
+
+	tea <span class="s">&quot;charm.land/bubbletea/v2&quot;</span>
+)
+
+<span class="k">type</span> editorFinishedMsg <span class="k">struct</span> {
+	path <span class="b">string</span>
+	err  <span class="b">error</span>
+}
+
+<span class="k">func</span> <span class="f">openEditor</span>(path <span class="b">string</span>) tea.<span class="t">Cmd</span> {
+	editor := os.<span class="f">Getenv</span>(<span class="s">&quot;EDITOR&quot;</span>)
+	<span class="k">if</span> editor == <span class="s">&quot;&quot;</span> {
+		editor = <span class="s">&quot;vi&quot;</span>
+	}
+	c := exec.<span class="f">Command</span>(editor, path)
+	<span class="k">return</span> tea.<span class="f">ExecProcess</span>(c, <span class="k">func</span>(err <span class="b">error</span>) tea.<span class="t">Msg</span> {
+		<span class="k">return</span> editorFinishedMsg{path, err} <span class="c">// runs after the editor closes</span>
+	})
+}
+
+<span class="k">type</span> model <span class="k">struct</span> {
+	content <span class="b">string</span>
+	err     <span class="b">error</span>
+}
+
+<span class="k">func</span> <span class="f">initialModel</span>() model { <span class="k">return</span> model{} }
+
+<span class="k">func</span> (m model) <span class="f">Init</span>() tea.<span class="t">Cmd</span> { <span class="k">return</span> <span class="b">nil</span> }
+
+<span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+	<span class="k">switch</span> msg := msg.(<span class="k">type</span>) {
+	<span class="k">case</span> editorFinishedMsg:
+		<span class="k">if</span> msg.err != <span class="b">nil</span> {
+			m.err = msg.err
+			<span class="k">return</span> m, <span class="b">nil</span>
+		}
+		data, err := os.<span class="f">ReadFile</span>(msg.path)
+		m.content, m.err = <span class="b">string</span>(data), err
+	<span class="k">case</span> tea.<span class="t">KeyPressMsg</span>:
+		<span class="k">switch</span> msg.<span class="f">String</span>() {
+		<span class="k">case</span> <span class="s">&quot;e&quot;</span>:
+			f, err := os.<span class="f">CreateTemp</span>(<span class="s">&quot;&quot;</span>, <span class="s">&quot;scratch-*.txt&quot;</span>)
+			<span class="k">if</span> err != <span class="b">nil</span> {
+				m.err = err
+				<span class="k">return</span> m, <span class="b">nil</span>
+			}
+			f.<span class="f">WriteString</span>(m.content)
+			f.<span class="f">Close</span>()
+			<span class="k">return</span> m, <span class="f">openEditor</span>(f.<span class="f">Name</span>())
+		<span class="k">case</span> <span class="s">&quot;q&quot;</span>, <span class="s">&quot;ctrl+c&quot;</span>:
+			<span class="k">return</span> m, tea.<span class="t">Quit</span>
+		}
+	}
+	<span class="k">return</span> m, <span class="b">nil</span>
+}
+
+<span class="k">func</span> (m model) <span class="f">View</span>() tea.<span class="t">View</span> {
+	<span class="k">if</span> m.err != <span class="b">nil</span> {
+		<span class="k">return</span> tea.<span class="f">NewView</span>(<span class="s">&quot;error: &quot;</span> + m.err.<span class="f">Error</span>() + <span class="s">&quot;\n\ne try again • q quit\n&quot;</span>)
+	}
+	body := m.content
+	<span class="k">if</span> body == <span class="s">&quot;&quot;</span> {
+		body = <span class="s">&quot;(empty)&quot;</span>
+	}
+	<span class="k">return</span> tea.<span class="f">NewView</span>(<span class="s">&quot;Your text:\n\n&quot;</span> + body + <span class="s">&quot;\n\ne edit in $EDITOR • q quit\n&quot;</span>)
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="k">if</span> _, err := tea.<span class="f">NewProgram</span>(<span class="f">initialModel</span>()).<span class="f">Run</span>(); err != <span class="b">nil</span> {
+		fmt.<span class="f">Println</span>(<span class="s">&quot;error:&quot;</span>, err)
+		os.<span class="f">Exit</span>(<span class="n">1</span>)
+	}
+}</code></pre></div>
+<div class="exnav"><a href="tea_batch_sequence.html">← tea_batch_sequence</a><a href="../examples.html">all examples</a><a href="tea_program_send.html">tea_program_send →</a></div>
+<script type="text/plain" id="rawsrc">// Bubble Tea example - run an external program ($EDITOR)
+//
+// Example complexity rating: [★★★☆] 3/4
+//
+// tea.ExecProcess pauses the program, gives the terminal to another
+// interactive process (vim, nano, less...) and resumes when it exits.
+// The callback turns the exit error into a message for Update.
+//
+// Keys: e open $EDITOR on a temp file, q quit
+package main
+
+import (
+	"fmt"
+	"os"
+	"os/exec"
+
+	tea "charm.land/bubbletea/v2"
+)
+
+type editorFinishedMsg struct {
+	path string
+	err  error
+}
+
+func openEditor(path string) tea.Cmd {
+	editor := os.Getenv("EDITOR")
+	if editor == "" {
+		editor = "vi"
+	}
+	c := exec.Command(editor, path)
+	return tea.ExecProcess(c, func(err error) tea.Msg {
+		return editorFinishedMsg{path, err} // runs after the editor closes
+	})
+}
+
+type model struct {
+	content string
+	err     error
+}
+
+func initialModel() model { return model{} }
+
+func (m model) Init() tea.Cmd { return nil }
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case editorFinishedMsg:
+		if msg.err != nil {
+			m.err = msg.err
+			return m, nil
+		}
+		data, err := os.ReadFile(msg.path)
+		m.content, m.err = string(data), err
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "e":
+			f, err := os.CreateTemp("", "scratch-*.txt")
+			if err != nil {
+				m.err = err
+				return m, nil
+			}
+			f.WriteString(m.content)
+			f.Close()
+			return m, openEditor(f.Name())
+		case "q", "ctrl+c":
+			return m, tea.Quit
+		}
+	}
+	return m, nil
+}
+
+func (m model) View() tea.View {
+	if m.err != nil {
+		return tea.NewView("error: " + m.err.Error() + "\n\ne try again • q quit\n")
+	}
+	body := m.content
+	if body == "" {
+		body = "(empty)"
+	}
+	return tea.NewView("Your text:\n\n" + body + "\n\ne edit in $EDITOR • q quit\n")
+}
+
+func main() {
+	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

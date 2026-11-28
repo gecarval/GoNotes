@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - tea batch sequence</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example core">
+<div class="exnav"><a href="tea_tick.html">← tea_tick</a><a href="../examples.html">all examples</a><a href="tea_exec_editor.html">tea_exec_editor →</a></div>
+<h1><span class="lib">Bubble Tea</span> · tea.Batch vs tea.Sequence <span class="difficulty">⭐⭐⭐☆</span></h1>
+<p class="exdesc">tea.Batch runs commands concurrently: results arrive in any order. tea.Sequence runs them one after another: results arrive in order. tea.Println prints a permanent line above the program&#x27;s view.</p>
+<p class="keys">Keys: b batch, s sequence, c clear, q quit</p>
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full">b batch • s sequence • c clear • q quit
+
+— batch —
+slow   finished (900ms)
+medium finished (500ms)
+fast   finished (100ms)</pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><span class="chip type">tea.Cmd</span> <span class="chip type">tea.Msg</span> <span class="chip type">tea.Model</span> <span class="chip type">tea.KeyPressMsg</span> <a class="chip core" href="../cheatsheet.html#fn-tea-Batch">tea.Batch</a> <a class="chip core" href="../cheatsheet.html#fn-tea-Sequence">tea.Sequence</a> <a class="chip core" href="../cheatsheet.html#fn-tea-Println">tea.Println</a> <a class="chip core" href="../cheatsheet.html#fn-tea-Quit">tea.Quit</a> <span class="chip type">tea.View</span> <a class="chip core" href="../cheatsheet.html#fn-tea-NewView">tea.NewView</a> <a class="chip core" href="../cheatsheet.html#fn-tea-NewProgram">tea.NewProgram</a> <a class="chip core" href="../cheatsheet.html#fn-tea-Run">tea.Run</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir tea_batch_sequence &amp;&amp; cd tea_batch_sequence
+go mod init tea_batch_sequence
+# save the code below as main.go, then:
+go get charm.land/bubbletea/v2@v2.1.2
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84</pre><pre class="code"><code><span class="c">// Bubble Tea example - tea.Batch vs tea.Sequence</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★★★☆] 3/4</span>
+<span class="c">//</span>
+<span class="c">// tea.Batch runs commands concurrently: results arrive in any order.</span>
+<span class="c">// tea.Sequence runs them one after another: results arrive in order.</span>
+<span class="c">// tea.Println prints a permanent line above the program&#x27;s view.</span>
+<span class="c">//</span>
+<span class="c">// Keys: b batch, s sequence, c clear, q quit</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+	<span class="s">&quot;time&quot;</span>
+
+	tea <span class="s">&quot;charm.land/bubbletea/v2&quot;</span>
+)
+
+<span class="k">type</span> doneMsg <span class="k">struct</span> {
+	name <span class="b">string</span>
+	took time.<span class="t">Duration</span>
+}
+
+<span class="c">// job simulates work that takes d to finish.</span>
+<span class="k">func</span> <span class="f">job</span>(name <span class="b">string</span>, d time.<span class="t">Duration</span>) tea.<span class="t">Cmd</span> {
+	<span class="k">return</span> <span class="k">func</span>() tea.<span class="t">Msg</span> {
+		time.<span class="f">Sleep</span>(d)
+		<span class="k">return</span> doneMsg{name, d}
+	}
+}
+
+<span class="k">type</span> model <span class="k">struct</span> {
+	log []<span class="b">string</span>
+}
+
+<span class="k">func</span> <span class="f">initialModel</span>() model { <span class="k">return</span> model{} }
+
+<span class="k">func</span> (m model) <span class="f">Init</span>() tea.<span class="t">Cmd</span> { <span class="k">return</span> <span class="b">nil</span> }
+
+<span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+	<span class="k">switch</span> msg := msg.(<span class="k">type</span>) {
+	<span class="k">case</span> doneMsg:
+		m.log = <span class="b">append</span>(m.log, fmt.<span class="f">Sprintf</span>(<span class="s">&quot;%-6s finished (%v)&quot;</span>, msg.name, msg.took))
+	<span class="k">case</span> tea.<span class="t">KeyPressMsg</span>:
+		<span class="k">switch</span> msg.<span class="f">String</span>() {
+		<span class="k">case</span> <span class="s">&quot;b&quot;</span>: <span class="c">// all three start at once; &quot;fast&quot; finishes first</span>
+			m.log = <span class="b">append</span>(m.log, <span class="s">&quot;— batch —&quot;</span>)
+			<span class="k">return</span> m, tea.<span class="f">Batch</span>(
+				<span class="f">job</span>(<span class="s">&quot;slow&quot;</span>, <span class="n">900</span>*time.<span class="t">Millisecond</span>),
+				<span class="f">job</span>(<span class="s">&quot;medium&quot;</span>, <span class="n">500</span>*time.<span class="t">Millisecond</span>),
+				<span class="f">job</span>(<span class="s">&quot;fast&quot;</span>, <span class="n">100</span>*time.<span class="t">Millisecond</span>),
+			)
+		<span class="k">case</span> <span class="s">&quot;s&quot;</span>: <span class="c">// each one waits for the previous one</span>
+			m.log = <span class="b">append</span>(m.log, <span class="s">&quot;— sequence —&quot;</span>)
+			<span class="k">return</span> m, tea.<span class="f">Sequence</span>(
+				<span class="f">job</span>(<span class="s">&quot;slow&quot;</span>, <span class="n">900</span>*time.<span class="t">Millisecond</span>),
+				<span class="f">job</span>(<span class="s">&quot;medium&quot;</span>, <span class="n">500</span>*time.<span class="t">Millisecond</span>),
+				<span class="f">job</span>(<span class="s">&quot;fast&quot;</span>, <span class="n">100</span>*time.<span class="t">Millisecond</span>),
+				tea.<span class="f">Println</span>(<span class="s">&quot;sequence complete ✔&quot;</span>), <span class="c">// printed above the UI</span>
+			)
+		<span class="k">case</span> <span class="s">&quot;c&quot;</span>:
+			m.log = <span class="b">nil</span>
+		<span class="k">case</span> <span class="s">&quot;q&quot;</span>, <span class="s">&quot;ctrl+c&quot;</span>:
+			<span class="k">return</span> m, tea.<span class="t">Quit</span>
+		}
+	}
+	<span class="k">return</span> m, <span class="b">nil</span>
+}
+
+<span class="k">func</span> (m model) <span class="f">View</span>() tea.<span class="t">View</span> {
+	s := <span class="s">&quot;b batch • s sequence • c clear • q quit\n\n&quot;</span>
+	<span class="k">for</span> _, line := <span class="k">range</span> m.log {
+		s += line + <span class="s">&quot;\n&quot;</span>
+	}
+	<span class="k">return</span> tea.<span class="f">NewView</span>(s)
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="k">if</span> _, err := tea.<span class="f">NewProgram</span>(<span class="f">initialModel</span>()).<span class="f">Run</span>(); err != <span class="b">nil</span> {
+		fmt.<span class="f">Println</span>(<span class="s">&quot;error:&quot;</span>, err)
+		os.<span class="f">Exit</span>(<span class="n">1</span>)
+	}
+}</code></pre></div>
+<div class="exnav"><a href="tea_tick.html">← tea_tick</a><a href="../examples.html">all examples</a><a href="tea_exec_editor.html">tea_exec_editor →</a></div>
+<script type="text/plain" id="rawsrc">// Bubble Tea example - tea.Batch vs tea.Sequence
+//
+// Example complexity rating: [★★★☆] 3/4
+//
+// tea.Batch runs commands concurrently: results arrive in any order.
+// tea.Sequence runs them one after another: results arrive in order.
+// tea.Println prints a permanent line above the program's view.
+//
+// Keys: b batch, s sequence, c clear, q quit
+package main
+
+import (
+	"fmt"
+	"os"
+	"time"
+
+	tea "charm.land/bubbletea/v2"
+)
+
+type doneMsg struct {
+	name string
+	took time.Duration
+}
+
+// job simulates work that takes d to finish.
+func job(name string, d time.Duration) tea.Cmd {
+	return func() tea.Msg {
+		time.Sleep(d)
+		return doneMsg{name, d}
+	}
+}
+
+type model struct {
+	log []string
+}
+
+func initialModel() model { return model{} }
+
+func (m model) Init() tea.Cmd { return nil }
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case doneMsg:
+		m.log = append(m.log, fmt.Sprintf("%-6s finished (%v)", msg.name, msg.took))
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "b": // all three start at once; "fast" finishes first
+			m.log = append(m.log, "— batch —")
+			return m, tea.Batch(
+				job("slow", 900*time.Millisecond),
+				job("medium", 500*time.Millisecond),
+				job("fast", 100*time.Millisecond),
+			)
+		case "s": // each one waits for the previous one
+			m.log = append(m.log, "— sequence —")
+			return m, tea.Sequence(
+				job("slow", 900*time.Millisecond),
+				job("medium", 500*time.Millisecond),
+				job("fast", 100*time.Millisecond),
+				tea.Println("sequence complete ✔"), // printed above the UI
+			)
+		case "c":
+			m.log = nil
+		case "q", "ctrl+c":
+			return m, tea.Quit
+		}
+	}
+	return m, nil
+}
+
+func (m model) View() tea.View {
+	s := "b batch • s sequence • c clear • q quit\n\n"
+	for _, line := range m.log {
+		s += line + "\n"
+	}
+	return tea.NewView(s)
+}
+
+func main() {
+	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - viewport pager</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example models">
+<div class="exnav"><a href="key_help.html">← key_help</a><a href="../examples.html">all examples</a><a href="spinner_basic.html">spinner_basic →</a></div>
+<h1><span class="lib">Bubbles</span> · viewport pager with header and footer <span class="difficulty">⭐⭐☆☆</span></h1>
+<p class="exdesc">viewport shows a window into content taller than the screen and handles scrolling keys and the mouse wheel. Its height must be the terminal height MINUS whatever you draw around it (header/footer).</p>
+<p class="keys">Keys: ↑/↓/pgup/pgdn/mouse wheel scroll, q quit</p>
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full"><span style="background:#7d56f4"> </span><span style="color:#ffffff;background:#7d56f4;font-weight:bold">fox.txt</span><span style="background:#7d56f4"> </span>
+  4  The quick brown fox jumps over the lazy dog.                               
+  5  The quick brown fox jumps over the lazy dog.                               
+  6  The quick brown fox jumps over the lazy dog.                               
+  7  The quick brown fox jumps over the lazy dog.                               
+  8  The quick brown fox jumps over the lazy dog.                               
+  9  The quick brown fox jumps over the lazy dog.                               
+ 10  The quick brown fox jumps over the lazy dog.                               
+ 11  The quick brown fox jumps over the lazy dog.                               
+ 12  The quick brown fox jumps over the lazy dog.                               
+ 13  The quick brown fox jumps over the lazy dog.                               
+ 14  The quick brown fox jumps over the lazy dog.                               
+ 15  The quick brown fox jumps over the lazy dog.                               
+ 16  The quick brown fox jumps over the lazy dog.                               
+ 17  The quick brown fox jumps over the lazy dog.                               
+ 18  The quick brown fox jumps over the lazy dog.                               
+ 19  The quick brown fox jumps over the lazy dog.                               
+ 20  The quick brown fox jumps over the lazy dog.                               
+ 21  The quick brown fox jumps over the lazy dog.                               
+ 22  The quick brown fox jumps over the lazy dog.                               
+ 23  The quick brown fox jumps over the lazy dog.                               
+ 24  The quick brown fox jumps over the lazy dog.                               
+ 25  The quick brown fox jumps over the lazy dog.                               
+<span style="color:#7d56f4">  3%</span></pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><span class="chip type">viewport.Model</span> <span class="chip type">tea.Cmd</span> <span class="chip type">tea.Msg</span> <span class="chip type">tea.Model</span> <span class="chip type">tea.KeyPressMsg</span> <a class="chip models" href="../cheatsheet.html#fn-tea-Quit">tea.Quit</a> <span class="chip type">tea.WindowSizeMsg</span> <a class="chip models" href="../cheatsheet.html#fn-viewport-New">viewport.New</a> <a class="chip models" href="../cheatsheet.html#fn-viewport-WithWidth">viewport.WithWidth</a> <a class="chip models" href="../cheatsheet.html#fn-viewport-WithHeight">viewport.WithHeight</a> <span class="chip type">tea.View</span> <a class="chip models" href="../cheatsheet.html#fn-tea-NewView">tea.NewView</a> <span class="chip type">tea.MouseModeCellMotion</span> <a class="chip models" href="../cheatsheet.html#fn-tea-NewProgram">tea.NewProgram</a> <a class="chip models" href="../cheatsheet.html#fn-lipgloss-NewStyle">lipgloss.NewStyle</a> <a class="chip models" href="../cheatsheet.html#fn-lipgloss-Bold">lipgloss.Bold</a> <a class="chip models" href="../cheatsheet.html#fn-lipgloss-Padding">lipgloss.Padding</a> <a class="chip models" href="../cheatsheet.html#fn-lipgloss-Background">lipgloss.Background</a> <a class="chip models" href="../cheatsheet.html#fn-lipgloss-Color">lipgloss.Color</a> <a class="chip models" href="../cheatsheet.html#fn-lipgloss-Foreground">lipgloss.Foreground</a> <a class="chip models" href="../cheatsheet.html#fn-lipgloss-Render">lipgloss.Render</a> <a class="chip models" href="../cheatsheet.html#fn-viewport-ScrollPercent">viewport.ScrollPercent</a> <a class="chip models" href="../cheatsheet.html#fn-viewport-Height">viewport.Height</a> <a class="chip models" href="../cheatsheet.html#fn-viewport-SetContent">viewport.SetContent</a> <a class="chip models" href="../cheatsheet.html#fn-viewport-SetWidth">viewport.SetWidth</a> <a class="chip models" href="../cheatsheet.html#fn-viewport-SetHeight">viewport.SetHeight</a> <a class="chip models" href="../cheatsheet.html#fn-viewport-Update">viewport.Update</a> <a class="chip models" href="../cheatsheet.html#fn-viewport-View">viewport.View</a> <a class="chip models" href="../cheatsheet.html#fn-tea-Run">tea.Run</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir viewport_pager &amp;&amp; cd viewport_pager
+go mod init viewport_pager
+# save the code below as main.go, then:
+go get charm.land/bubbletea/v2@v2.1.2 charm.land/lipgloss/v2@v2.0.6 charm.land/bubbles/v2@v2.2.2
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88</pre><pre class="code"><code><span class="c">// Bubbles example - viewport pager with header and footer</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★★☆☆] 2/4</span>
+<span class="c">//</span>
+<span class="c">// viewport shows a window into content taller than the screen and</span>
+<span class="c">// handles scrolling keys and the mouse wheel. Its height must be the</span>
+<span class="c">// terminal height MINUS whatever you draw around it (header/footer).</span>
+<span class="c">//</span>
+<span class="c">// Keys: ↑/↓/pgup/pgdn/mouse wheel scroll, q quit</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+	<span class="s">&quot;strings&quot;</span>
+
+	<span class="s">&quot;charm.land/bubbles/v2/viewport&quot;</span>
+	tea <span class="s">&quot;charm.land/bubbletea/v2&quot;</span>
+	<span class="s">&quot;charm.land/lipgloss/v2&quot;</span>
+)
+
+<span class="k">var</span> (
+	titleStyle = lipgloss.<span class="f">NewStyle</span>().<span class="f">Bold</span>(<span class="b">true</span>).<span class="f">Padding</span>(<span class="n">0</span>, <span class="n">1</span>).
+			<span class="f">Background</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#7D56F4&quot;</span>)).<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#FFFFFF&quot;</span>))
+	infoStyle = lipgloss.<span class="f">NewStyle</span>().<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#7D56F4&quot;</span>))
+)
+
+<span class="k">type</span> model <span class="k">struct</span> {
+	content <span class="b">string</span>
+	ready   <span class="b">bool</span>
+	vp      viewport.<span class="t">Model</span>
+}
+
+<span class="k">func</span> <span class="f">initialModel</span>() model {
+	<span class="k">var</span> b strings.<span class="t">Builder</span>
+	<span class="k">for</span> i := <span class="n">1</span>; i &lt;= <span class="n">120</span>; i++ {
+		fmt.<span class="f">Fprintf</span>(&amp;b, <span class="s">&quot;%3d  The quick brown fox jumps over the lazy dog.\n&quot;</span>, i)
+	}
+	<span class="k">return</span> model{content: b.<span class="f">String</span>()}
+}
+
+<span class="k">func</span> (m model) <span class="f">Init</span>() tea.<span class="t">Cmd</span> { <span class="k">return</span> <span class="b">nil</span> }
+
+<span class="k">func</span> (m model) <span class="f">headerView</span>() <span class="b">string</span> { <span class="k">return</span> titleStyle.<span class="f">Render</span>(<span class="s">&quot;fox.txt&quot;</span>) }
+
+<span class="k">func</span> (m model) <span class="f">footerView</span>() <span class="b">string</span> {
+	<span class="k">return</span> infoStyle.<span class="f">Render</span>(fmt.<span class="f">Sprintf</span>(<span class="s">&quot;%3.f%%&quot;</span>, m.vp.<span class="f">ScrollPercent</span>()*<span class="n">100</span>))
+}
+
+<span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+	<span class="k">switch</span> msg := msg.(<span class="k">type</span>) {
+	<span class="k">case</span> tea.<span class="t">KeyPressMsg</span>:
+		<span class="k">if</span> s := msg.<span class="f">String</span>(); s == <span class="s">&quot;q&quot;</span> || s == <span class="s">&quot;ctrl+c&quot;</span> {
+			<span class="k">return</span> m, tea.<span class="t">Quit</span>
+		}
+	<span class="k">case</span> tea.<span class="t">WindowSizeMsg</span>:
+		margin := lipgloss.<span class="f">Height</span>(m.<span class="f">headerView</span>()) + lipgloss.<span class="f">Height</span>(m.<span class="f">footerView</span>())
+		<span class="k">if</span> !m.ready {
+			<span class="c">// The first WindowSizeMsg: now we know the size, create it.</span>
+			m.vp = viewport.<span class="f">New</span>(viewport.<span class="f">WithWidth</span>(msg.<span class="t">Width</span>), viewport.<span class="f">WithHeight</span>(msg.<span class="t">Height</span>-margin))
+			m.vp.<span class="f">SetContent</span>(m.content)
+			m.ready = <span class="b">true</span>
+		} <span class="k">else</span> {
+			m.vp.<span class="f">SetWidth</span>(msg.<span class="t">Width</span>)
+			m.vp.<span class="f">SetHeight</span>(msg.<span class="t">Height</span> - margin)
+		}
+	}
+	<span class="k">var</span> cmd tea.<span class="t">Cmd</span>
+	m.vp, cmd = m.vp.<span class="f">Update</span>(msg)
+	<span class="k">return</span> m, cmd
+}
+
+<span class="k">func</span> (m model) <span class="f">View</span>() tea.<span class="t">View</span> {
+	<span class="k">if</span> !m.ready {
+		<span class="k">return</span> tea.<span class="f">NewView</span>(<span class="s">&quot;\n  Initializing...&quot;</span>)
+	}
+	v := tea.<span class="f">NewView</span>(m.<span class="f">headerView</span>() + <span class="s">&quot;\n&quot;</span> + m.vp.<span class="f">View</span>() + <span class="s">&quot;\n&quot;</span> + m.<span class="f">footerView</span>())
+	v.<span class="t">AltScreen</span> = <span class="b">true</span>
+	v.<span class="t">MouseMode</span> = tea.<span class="t">MouseModeCellMotion</span> <span class="c">// needed for the mouse wheel</span>
+	<span class="k">return</span> v
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="k">if</span> _, err := tea.<span class="f">NewProgram</span>(<span class="f">initialModel</span>()).<span class="f">Run</span>(); err != <span class="b">nil</span> {
+		fmt.<span class="f">Println</span>(<span class="s">&quot;error:&quot;</span>, err)
+		os.<span class="f">Exit</span>(<span class="n">1</span>)
+	}
+}</code></pre></div>
+<div class="exnav"><a href="key_help.html">← key_help</a><a href="../examples.html">all examples</a><a href="spinner_basic.html">spinner_basic →</a></div>
+<script type="text/plain" id="rawsrc">// Bubbles example - viewport pager with header and footer
+//
+// Example complexity rating: [★★☆☆] 2/4
+//
+// viewport shows a window into content taller than the screen and
+// handles scrolling keys and the mouse wheel. Its height must be the
+// terminal height MINUS whatever you draw around it (header/footer).
+//
+// Keys: ↑/↓/pgup/pgdn/mouse wheel scroll, q quit
+package main
+
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"charm.land/bubbles/v2/viewport"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+)
+
+var (
+	titleStyle = lipgloss.NewStyle().Bold(true).Padding(0, 1).
+			Background(lipgloss.Color("#7D56F4")).Foreground(lipgloss.Color("#FFFFFF"))
+	infoStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#7D56F4"))
+)
+
+type model struct {
+	content string
+	ready   bool
+	vp      viewport.Model
+}
+
+func initialModel() model {
+	var b strings.Builder
+	for i := 1; i <= 120; i++ {
+		fmt.Fprintf(&b, "%3d  The quick brown fox jumps over the lazy dog.\n", i)
+	}
+	return model{content: b.String()}
+}
+
+func (m model) Init() tea.Cmd { return nil }
+
+func (m model) headerView() string { return titleStyle.Render("fox.txt") }
+
+func (m model) footerView() string {
+	return infoStyle.Render(fmt.Sprintf("%3.f%%", m.vp.ScrollPercent()*100))
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyPressMsg:
+		if s := msg.String(); s == "q" || s == "ctrl+c" {
+			return m, tea.Quit
+		}
+	case tea.WindowSizeMsg:
+		margin := lipgloss.Height(m.headerView()) + lipgloss.Height(m.footerView())
+		if !m.ready {
+			// The first WindowSizeMsg: now we know the size, create it.
+			m.vp = viewport.New(viewport.WithWidth(msg.Width), viewport.WithHeight(msg.Height-margin))
+			m.vp.SetContent(m.content)
+			m.ready = true
+		} else {
+			m.vp.SetWidth(msg.Width)
+			m.vp.SetHeight(msg.Height - margin)
+		}
+	}
+	var cmd tea.Cmd
+	m.vp, cmd = m.vp.Update(msg)
+	return m, cmd
+}
+
+func (m model) View() tea.View {
+	if !m.ready {
+		return tea.NewView("\n  Initializing...")
+	}
+	v := tea.NewView(m.headerView() + "\n" + m.vp.View() + "\n" + m.footerView())
+	v.AltScreen = true
+	v.MouseMode = tea.MouseModeCellMotion // needed for the mouse wheel
+	return v
+}
+
+func main() {
+	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

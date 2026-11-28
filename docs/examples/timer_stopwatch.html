@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - timer stopwatch</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example audio">
+<div class="exnav"><a href="progress_bar.html">← progress_bar</a><a href="../examples.html">all examples</a><a href="lipgloss_tree_list.html">lipgloss_tree_list →</a></div>
+<h1><span class="lib">Bubbles</span> · timer and stopwatch side by side <span class="difficulty">⭐⭐☆☆</span></h1>
+<p class="exdesc">timer counts down and sends timer.TimeoutMsg at zero; stopwatch counts up. Both tick through their own TickMsg; each message carries an ID, so forwarding a msg to BOTH components is safe: the wrong one ignores it.</p>
+<p class="keys">Keys: space start/stop both, r reset stopwatch, q quit</p>
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full">╭────────────────────╮╭────────────────────╮
+│  timer             ││  stopwatch         │
+│  28.9s             ││  900ms             │
+╰────────────────────╯╰────────────────────╯
+ space start/stop • r reset stopwatch • q quit</pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><span class="chip type">timer.Model</span> <span class="chip type">stopwatch.Model</span> <a class="chip audio" href="../cheatsheet.html#fn-timer-New">timer.New</a> <a class="chip audio" href="../cheatsheet.html#fn-timer-WithInterval">timer.WithInterval</a> <a class="chip audio" href="../cheatsheet.html#fn-stopwatch-New">stopwatch.New</a> <a class="chip audio" href="../cheatsheet.html#fn-stopwatch-WithInterval">stopwatch.WithInterval</a> <span class="chip type">tea.Cmd</span> <a class="chip audio" href="../cheatsheet.html#fn-tea-Batch">tea.Batch</a> <a class="chip audio" href="../cheatsheet.html#fn-timer-Init">timer.Init</a> <a class="chip audio" href="../cheatsheet.html#fn-stopwatch-Init">stopwatch.Init</a> <span class="chip type">tea.Msg</span> <span class="chip type">tea.Model</span> <span class="chip type">timer.TimeoutMsg</span> <span class="chip type">tea.KeyPressMsg</span> <a class="chip audio" href="../cheatsheet.html#fn-timer-Toggle">timer.Toggle</a> <a class="chip audio" href="../cheatsheet.html#fn-stopwatch-Toggle">stopwatch.Toggle</a> <a class="chip audio" href="../cheatsheet.html#fn-stopwatch-Reset">stopwatch.Reset</a> <a class="chip audio" href="../cheatsheet.html#fn-tea-Quit">tea.Quit</a> <a class="chip audio" href="../cheatsheet.html#fn-timer-Update">timer.Update</a> <a class="chip audio" href="../cheatsheet.html#fn-stopwatch-Update">stopwatch.Update</a> <span class="chip type">tea.View</span> <a class="chip audio" href="../cheatsheet.html#fn-timer-View">timer.View</a> <a class="chip audio" href="../cheatsheet.html#fn-stopwatch-View">stopwatch.View</a> <a class="chip audio" href="../cheatsheet.html#fn-tea-NewView">tea.NewView</a> <a class="chip audio" href="../cheatsheet.html#fn-tea-NewProgram">tea.NewProgram</a> <a class="chip audio" href="../cheatsheet.html#fn-lipgloss-NewStyle">lipgloss.NewStyle</a> <a class="chip audio" href="../cheatsheet.html#fn-lipgloss-Border">lipgloss.Border</a> <a class="chip audio" href="../cheatsheet.html#fn-lipgloss-RoundedBorder">lipgloss.RoundedBorder</a> <a class="chip audio" href="../cheatsheet.html#fn-lipgloss-Padding">lipgloss.Padding</a> <a class="chip audio" href="../cheatsheet.html#fn-lipgloss-Width">lipgloss.Width</a> <a class="chip audio" href="../cheatsheet.html#fn-lipgloss-JoinHorizontal">lipgloss.JoinHorizontal</a> <a class="chip audio" href="../cheatsheet.html#fn-lipgloss-Render">lipgloss.Render</a> <a class="chip audio" href="../cheatsheet.html#fn-tea-Run">tea.Run</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir timer_stopwatch &amp;&amp; cd timer_stopwatch
+go mod init timer_stopwatch
+# save the code below as main.go, then:
+go get charm.land/bubbletea/v2@v2.1.2 charm.land/lipgloss/v2@v2.0.6 charm.land/bubbles/v2@v2.2.2
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78</pre><pre class="code"><code><span class="c">// Bubbles example - timer and stopwatch side by side</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★★☆☆] 2/4</span>
+<span class="c">//</span>
+<span class="c">// timer counts down and sends timer.TimeoutMsg at zero; stopwatch counts</span>
+<span class="c">// up. Both tick through their own TickMsg; each message carries an ID,</span>
+<span class="c">// so forwarding a msg to BOTH components is safe: the wrong one ignores it.</span>
+<span class="c">//</span>
+<span class="c">// Keys: space start/stop both, r reset stopwatch, q quit</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+	<span class="s">&quot;time&quot;</span>
+
+	<span class="s">&quot;charm.land/bubbles/v2/stopwatch&quot;</span>
+	<span class="s">&quot;charm.land/bubbles/v2/timer&quot;</span>
+	tea <span class="s">&quot;charm.land/bubbletea/v2&quot;</span>
+	<span class="s">&quot;charm.land/lipgloss/v2&quot;</span>
+)
+
+<span class="k">var</span> box = lipgloss.<span class="f">NewStyle</span>().<span class="f">Border</span>(lipgloss.<span class="f">RoundedBorder</span>()).<span class="f">Padding</span>(<span class="n">0</span>, <span class="n">2</span>).<span class="f">Width</span>(<span class="n">22</span>)
+
+<span class="k">type</span> model <span class="k">struct</span> {
+	timer     timer.<span class="t">Model</span>
+	stopwatch stopwatch.<span class="t">Model</span>
+	timedOut  <span class="b">bool</span>
+}
+
+<span class="k">func</span> <span class="f">initialModel</span>() model {
+	<span class="k">return</span> model{
+		timer:     timer.<span class="f">New</span>(<span class="n">30</span>*time.<span class="t">Second</span>, timer.<span class="f">WithInterval</span>(<span class="n">100</span>*time.<span class="t">Millisecond</span>)),
+		stopwatch: stopwatch.<span class="f">New</span>(stopwatch.<span class="f">WithInterval</span>(<span class="n">100</span> * time.<span class="t">Millisecond</span>)),
+	}
+}
+
+<span class="k">func</span> (m model) <span class="f">Init</span>() tea.<span class="t">Cmd</span> {
+	<span class="k">return</span> tea.<span class="f">Batch</span>(m.timer.<span class="f">Init</span>(), m.stopwatch.<span class="f">Init</span>()) <span class="c">// start both</span>
+}
+
+<span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+	<span class="k">switch</span> msg := msg.(<span class="k">type</span>) {
+	<span class="k">case</span> timer.<span class="t">TimeoutMsg</span>:
+		m.timedOut = <span class="b">true</span>
+	<span class="k">case</span> tea.<span class="t">KeyPressMsg</span>:
+		<span class="k">switch</span> msg.<span class="f">String</span>() {
+		<span class="k">case</span> <span class="s">&quot;space&quot;</span>:
+			<span class="k">return</span> m, tea.<span class="f">Batch</span>(m.timer.<span class="f">Toggle</span>(), m.stopwatch.<span class="f">Toggle</span>())
+		<span class="k">case</span> <span class="s">&quot;r&quot;</span>:
+			<span class="k">return</span> m, m.stopwatch.<span class="f">Reset</span>()
+		<span class="k">case</span> <span class="s">&quot;q&quot;</span>, <span class="s">&quot;ctrl+c&quot;</span>:
+			<span class="k">return</span> m, tea.<span class="t">Quit</span>
+		}
+	}
+	<span class="c">// Forward to both: TickMsg/StartStopMsg carry the component ID.</span>
+	<span class="k">var</span> c1, c2 tea.<span class="t">Cmd</span>
+	m.timer, c1 = m.timer.<span class="f">Update</span>(msg)
+	m.stopwatch, c2 = m.stopwatch.<span class="f">Update</span>(msg)
+	<span class="k">return</span> m, tea.<span class="f">Batch</span>(c1, c2)
+}
+
+<span class="k">func</span> (m model) <span class="f">View</span>() tea.<span class="t">View</span> {
+	t := <span class="s">&quot;timer\n&quot;</span> + m.timer.<span class="f">View</span>()
+	<span class="k">if</span> m.timedOut {
+		t = <span class="s">&quot;timer\nTime&#x27;s up!&quot;</span>
+	}
+	s := <span class="s">&quot;stopwatch\n&quot;</span> + m.stopwatch.<span class="f">View</span>()
+	row := lipgloss.<span class="f">JoinHorizontal</span>(lipgloss.<span class="t">Top</span>, box.<span class="f">Render</span>(t), box.<span class="f">Render</span>(s))
+	<span class="k">return</span> tea.<span class="f">NewView</span>(row + <span class="s">&quot;\n space start/stop • r reset stopwatch • q quit\n&quot;</span>)
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="k">if</span> _, err := tea.<span class="f">NewProgram</span>(<span class="f">initialModel</span>()).<span class="f">Run</span>(); err != <span class="b">nil</span> {
+		fmt.<span class="f">Println</span>(<span class="s">&quot;error:&quot;</span>, err)
+		os.<span class="f">Exit</span>(<span class="n">1</span>)
+	}
+}</code></pre></div>
+<div class="exnav"><a href="progress_bar.html">← progress_bar</a><a href="../examples.html">all examples</a><a href="lipgloss_tree_list.html">lipgloss_tree_list →</a></div>
+<script type="text/plain" id="rawsrc">// Bubbles example - timer and stopwatch side by side
+//
+// Example complexity rating: [★★☆☆] 2/4
+//
+// timer counts down and sends timer.TimeoutMsg at zero; stopwatch counts
+// up. Both tick through their own TickMsg; each message carries an ID,
+// so forwarding a msg to BOTH components is safe: the wrong one ignores it.
+//
+// Keys: space start/stop both, r reset stopwatch, q quit
+package main
+
+import (
+	"fmt"
+	"os"
+	"time"
+
+	"charm.land/bubbles/v2/stopwatch"
+	"charm.land/bubbles/v2/timer"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+)
+
+var box = lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).Padding(0, 2).Width(22)
+
+type model struct {
+	timer     timer.Model
+	stopwatch stopwatch.Model
+	timedOut  bool
+}
+
+func initialModel() model {
+	return model{
+		timer:     timer.New(30*time.Second, timer.WithInterval(100*time.Millisecond)),
+		stopwatch: stopwatch.New(stopwatch.WithInterval(100 * time.Millisecond)),
+	}
+}
+
+func (m model) Init() tea.Cmd {
+	return tea.Batch(m.timer.Init(), m.stopwatch.Init()) // start both
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case timer.TimeoutMsg:
+		m.timedOut = true
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "space":
+			return m, tea.Batch(m.timer.Toggle(), m.stopwatch.Toggle())
+		case "r":
+			return m, m.stopwatch.Reset()
+		case "q", "ctrl+c":
+			return m, tea.Quit
+		}
+	}
+	// Forward to both: TickMsg/StartStopMsg carry the component ID.
+	var c1, c2 tea.Cmd
+	m.timer, c1 = m.timer.Update(msg)
+	m.stopwatch, c2 = m.stopwatch.Update(msg)
+	return m, tea.Batch(c1, c2)
+}
+
+func (m model) View() tea.View {
+	t := "timer\n" + m.timer.View()
+	if m.timedOut {
+		t = "timer\nTime's up!"
+	}
+	s := "stopwatch\n" + m.stopwatch.View()
+	row := lipgloss.JoinHorizontal(lipgloss.Top, box.Render(t), box.Render(s))
+	return tea.NewView(row + "\n space start/stop • r reset stopwatch • q quit\n")
+}
+
+func main() {
+	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

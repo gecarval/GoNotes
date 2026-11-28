@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - tea mouse</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example core">
+<div class="exnav"><a href="tea_async_cmd.html">← tea_async_cmd</a><a href="../examples.html">all examples</a><a href="tea_tick.html">tea_tick →</a></div>
+<h1><span class="lib">Bubble Tea</span> · mouse events <span class="difficulty">⭐⭐☆☆</span></h1>
+<p class="exdesc">Mouse reporting is enabled per frame through View.MouseMode. Clicks, releases, wheel and motion arrive as different message types, all implementing tea.MouseMsg (call .Mouse() to get X, Y and Button).</p>
+<p class="keys">Mouse: click anywhere, scroll the wheel. Keys: q quit</p>
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full">clicks: 0   last: 
+scroll: 0
+hover:  
+
+click, scroll or move the mouse • q quit</pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><a class="chip core" href="../cheatsheet.html#fn-tea-Mouse">tea.Mouse</a> <span class="chip type">tea.Cmd</span> <span class="chip type">tea.Msg</span> <span class="chip type">tea.Model</span> <span class="chip type">tea.MouseClickMsg</span> <span class="chip type">tea.MouseWheelMsg</span> <span class="chip type">tea.MouseWheelUp</span> <span class="chip type">tea.MouseWheelDown</span> <span class="chip type">tea.MouseMotionMsg</span> <span class="chip type">tea.KeyPressMsg</span> <a class="chip core" href="../cheatsheet.html#fn-tea-Quit">tea.Quit</a> <span class="chip type">tea.View</span> <a class="chip core" href="../cheatsheet.html#fn-tea-NewView">tea.NewView</a> <span class="chip type">tea.MouseModeAllMotion</span> <a class="chip core" href="../cheatsheet.html#fn-tea-NewProgram">tea.NewProgram</a> <a class="chip core" href="../cheatsheet.html#fn-tea-Run">tea.Run</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir tea_mouse &amp;&amp; cd tea_mouse
+go mod init tea_mouse
+# save the code below as main.go, then:
+go get charm.land/bubbletea/v2@v2.1.2
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68</pre><pre class="code"><code><span class="c">// Bubble Tea example - mouse events</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★★☆☆] 2/4</span>
+<span class="c">//</span>
+<span class="c">// Mouse reporting is enabled per frame through View.MouseMode.</span>
+<span class="c">// Clicks, releases, wheel and motion arrive as different message types,</span>
+<span class="c">// all implementing tea.MouseMsg (call .Mouse() to get X, Y and Button).</span>
+<span class="c">//</span>
+<span class="c">// Mouse: click anywhere, scroll the wheel. Keys: q quit</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+
+	tea <span class="s">&quot;charm.land/bubbletea/v2&quot;</span>
+)
+
+<span class="k">type</span> model <span class="k">struct</span> {
+	lastClick tea.<span class="t">Mouse</span>
+	clicks    <span class="b">int</span>
+	scroll    <span class="b">int</span>
+	hover     <span class="b">string</span>
+}
+
+<span class="k">func</span> <span class="f">initialModel</span>() model { <span class="k">return</span> model{} }
+
+<span class="k">func</span> (m model) <span class="f">Init</span>() tea.<span class="t">Cmd</span> { <span class="k">return</span> <span class="b">nil</span> }
+
+<span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+	<span class="k">switch</span> msg := msg.(<span class="k">type</span>) {
+	<span class="k">case</span> tea.<span class="t">MouseClickMsg</span>:
+		m.lastClick = msg.<span class="f">Mouse</span>()
+		m.clicks++
+	<span class="k">case</span> tea.<span class="t">MouseWheelMsg</span>:
+		<span class="k">switch</span> msg.<span class="f">Mouse</span>().<span class="t">Button</span> {
+		<span class="k">case</span> tea.<span class="t">MouseWheelUp</span>:
+			m.scroll--
+		<span class="k">case</span> tea.<span class="t">MouseWheelDown</span>:
+			m.scroll++
+		}
+	<span class="k">case</span> tea.<span class="t">MouseMotionMsg</span>:
+		mo := msg.<span class="f">Mouse</span>()
+		m.hover = fmt.<span class="f">Sprintf</span>(<span class="s">&quot;(%d, %d)&quot;</span>, mo.<span class="t">X</span>, mo.<span class="t">Y</span>)
+	<span class="k">case</span> tea.<span class="t">KeyPressMsg</span>:
+		<span class="k">if</span> msg.<span class="f">String</span>() == <span class="s">&quot;q&quot;</span> || msg.<span class="f">String</span>() == <span class="s">&quot;ctrl+c&quot;</span> {
+			<span class="k">return</span> m, tea.<span class="t">Quit</span>
+		}
+	}
+	<span class="k">return</span> m, <span class="b">nil</span>
+}
+
+<span class="k">func</span> (m model) <span class="f">View</span>() tea.<span class="t">View</span> {
+	s := fmt.<span class="f">Sprintf</span>(
+		<span class="s">&quot;clicks: %d   last: %s\nscroll: %d\nhover:  %s\n\nclick, scroll or move the mouse • q quit\n&quot;</span>,
+		m.clicks, m.lastClick, m.scroll, m.hover,
+	)
+	v := tea.<span class="f">NewView</span>(s)
+	v.<span class="t">MouseMode</span> = tea.<span class="t">MouseModeAllMotion</span> <span class="c">// or tea.MouseModeCellMotion (no plain hover)</span>
+	<span class="k">return</span> v
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="k">if</span> _, err := tea.<span class="f">NewProgram</span>(<span class="f">initialModel</span>()).<span class="f">Run</span>(); err != <span class="b">nil</span> {
+		fmt.<span class="f">Println</span>(<span class="s">&quot;error:&quot;</span>, err)
+		os.<span class="f">Exit</span>(<span class="n">1</span>)
+	}
+}</code></pre></div>
+<div class="exnav"><a href="tea_async_cmd.html">← tea_async_cmd</a><a href="../examples.html">all examples</a><a href="tea_tick.html">tea_tick →</a></div>
+<script type="text/plain" id="rawsrc">// Bubble Tea example - mouse events
+//
+// Example complexity rating: [★★☆☆] 2/4
+//
+// Mouse reporting is enabled per frame through View.MouseMode.
+// Clicks, releases, wheel and motion arrive as different message types,
+// all implementing tea.MouseMsg (call .Mouse() to get X, Y and Button).
+//
+// Mouse: click anywhere, scroll the wheel. Keys: q quit
+package main
+
+import (
+	"fmt"
+	"os"
+
+	tea "charm.land/bubbletea/v2"
+)
+
+type model struct {
+	lastClick tea.Mouse
+	clicks    int
+	scroll    int
+	hover     string
+}
+
+func initialModel() model { return model{} }
+
+func (m model) Init() tea.Cmd { return nil }
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.MouseClickMsg:
+		m.lastClick = msg.Mouse()
+		m.clicks++
+	case tea.MouseWheelMsg:
+		switch msg.Mouse().Button {
+		case tea.MouseWheelUp:
+			m.scroll--
+		case tea.MouseWheelDown:
+			m.scroll++
+		}
+	case tea.MouseMotionMsg:
+		mo := msg.Mouse()
+		m.hover = fmt.Sprintf("(%d, %d)", mo.X, mo.Y)
+	case tea.KeyPressMsg:
+		if msg.String() == "q" || msg.String() == "ctrl+c" {
+			return m, tea.Quit
+		}
+	}
+	return m, nil
+}
+
+func (m model) View() tea.View {
+	s := fmt.Sprintf(
+		"clicks: %d   last: %s\nscroll: %d\nhover:  %s\n\nclick, scroll or move the mouse • q quit\n",
+		m.clicks, m.lastClick, m.scroll, m.hover,
+	)
+	v := tea.NewView(s)
+	v.MouseMode = tea.MouseModeAllMotion // or tea.MouseModeCellMotion (no plain hover)
+	return v
+}
+
+func main() {
+	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>
