@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - progress bar</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example audio">
+<div class="exnav"><a href="spinner_basic.html">← spinner_basic</a><a href="../examples.html">all examples</a><a href="timer_stopwatch.html">timer_stopwatch →</a></div>
+<h1><span class="lib">Bubbles</span> · animated progress bar <span class="difficulty">⭐⭐☆☆</span></h1>
+<p class="exdesc">progress.SetPercent returns a Cmd that animates the bar (spring physics) by sending progress.FrameMsg. You must forward FrameMsg to the bar&#x27;s Update, or the animation freezes. Progress itself comes from a tea.Tick loop here.</p>
+<p class="keys">Keys: q quit</p>
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full">
+  Installing packages...
+
+  <span style="color:#5a56e0;background:#5c56e1">▌</span><span style="color:#5e56e1;background:#5f57e1">▌</span><span style="color:#6157e1;background:#6357e1">▌</span><span style="color:#6557e2;background:#6657e2">▌</span><span style="color:#6858e2;background:#6a58e2">▌</span><span style="color:#6c58e3;background:#6d58e3">▌</span><span style="color:#6f59e3;background:#7059e3">▌</span><span style="color:#7259e3;background:#7459e4">▌</span><span style="color:#755ae4;background:#775ae4">▌</span><span style="color:#785ae4;background:#7a5ae5">▌</span><span style="color:#7b5ae5;background:#7d5be5">▌</span><span style="color:#7e5be5;background:#805be5">▌</span><span style="color:#815be6;background:#835ce6">▌</span><span style="color:#845ce6;background:#865ce6">▌</span><span style="color:#875ce7;background:#895de7">▌</span><span style="color:#8a5de7;background:#8c5de7">▌</span><span style="color:#8d5de7;background:#8e5de8">▌</span><span style="color:#905ee8;background:#915ee8">▌</span><span style="color:#935ee8;background:#945ee9">▌</span><span style="color:#955fe9;background:#975fe9">▌</span><span style="color:#985fe9;background:#995fe9">▌</span><span style="color:#9b60ea;background:#9c60ea">▌</span><span style="color:#9d60ea;background:#9f60ea">▌</span><span style="color:#a060eb;background:#a161eb">▌</span><span style="color:#a361eb;background:#a461eb">▌</span><span style="color:#a561eb;background:#a762ec">▌</span><span style="color:#a862ec;background:#a962ec">▌</span><span style="color:#ab62ec;background:#ac63ed">▌</span><span style="color:#ad63ed;background:#af63ed">▌</span><span style="color:#b063ed;background:#b163ed">▌</span><span style="color:#b264ee;background:#b464ee">▌</span><span style="color:#b564ee;background:#b664ee">▌</span><span style="color:#b765ef;background:#b965ef">▌</span><span style="color:#ba65ef;background:#bb65ef">▌</span><span style="color:#bc66ef;background:#be66f0">▌</span><span style="color:#bf66f0;background:#c066f0">▌</span><span style="color:#c166f0;background:#c367f1">▌</span><span style="color:#c467f1;background:#c567f1">▌</span><span style="color:#c667f1;background:#c868f1">▌</span><span style="color:#c968f2;background:#ca68f2">▌</span><span style="color:#cb68f2;background:#cd69f2">▌</span><span style="color:#ce69f3;background:#cf69f3">▌</span><span style="color:#d069f3;background:#d269f3">▌</span><span style="color:#606060">░░░░░░░░░░░░</span>  79%
+
+  q quit</pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><span class="chip type">tea.Cmd</span> <a class="chip audio" href="../cheatsheet.html#fn-tea-Tick">tea.Tick</a> <span class="chip type">tea.Msg</span> <span class="chip type">progress.Model</span> <a class="chip audio" href="../cheatsheet.html#fn-progress-New">progress.New</a> <a class="chip audio" href="../cheatsheet.html#fn-progress-WithDefaultBlend">progress.WithDefaultBlend</a> <a class="chip audio" href="../cheatsheet.html#fn-progress-WithWidth">progress.WithWidth</a> <span class="chip type">tea.Model</span> <span class="chip type">tea.KeyPressMsg</span> <a class="chip audio" href="../cheatsheet.html#fn-tea-Quit">tea.Quit</a> <span class="chip type">tea.WindowSizeMsg</span> <a class="chip audio" href="../cheatsheet.html#fn-tea-Batch">tea.Batch</a> <span class="chip type">progress.FrameMsg</span> <span class="chip type">tea.View</span> <a class="chip audio" href="../cheatsheet.html#fn-tea-NewView">tea.NewView</a> <a class="chip audio" href="../cheatsheet.html#fn-tea-NewProgram">tea.NewProgram</a> <a class="chip audio" href="../cheatsheet.html#fn-progress-SetWidth">progress.SetWidth</a> <a class="chip audio" href="../cheatsheet.html#fn-progress-Percent">progress.Percent</a> <a class="chip audio" href="../cheatsheet.html#fn-progress-IncrPercent">progress.IncrPercent</a> <a class="chip audio" href="../cheatsheet.html#fn-progress-Update">progress.Update</a> <a class="chip audio" href="../cheatsheet.html#fn-progress-View">progress.View</a> <a class="chip audio" href="../cheatsheet.html#fn-tea-Run">tea.Run</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir progress_bar &amp;&amp; cd progress_bar
+go mod init progress_bar
+# save the code below as main.go, then:
+go get charm.land/bubbletea/v2@v2.1.2 charm.land/bubbles/v2@v2.2.2
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69</pre><pre class="code"><code><span class="c">// Bubbles example - animated progress bar</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★★☆☆] 2/4</span>
+<span class="c">//</span>
+<span class="c">// progress.SetPercent returns a Cmd that animates the bar (spring</span>
+<span class="c">// physics) by sending progress.FrameMsg. You must forward FrameMsg to</span>
+<span class="c">// the bar&#x27;s Update, or the animation freezes. Progress itself comes from</span>
+<span class="c">// a tea.Tick loop here.</span>
+<span class="c">//</span>
+<span class="c">// Keys: q quit</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+	<span class="s">&quot;time&quot;</span>
+
+	<span class="s">&quot;charm.land/bubbles/v2/progress&quot;</span>
+	tea <span class="s">&quot;charm.land/bubbletea/v2&quot;</span>
+)
+
+<span class="k">type</span> tickMsg time.<span class="t">Time</span>
+
+<span class="k">func</span> <span class="f">tickCmd</span>() tea.<span class="t">Cmd</span> {
+	<span class="k">return</span> tea.<span class="f">Tick</span>(<span class="n">500</span>*time.<span class="t">Millisecond</span>, <span class="k">func</span>(t time.<span class="t">Time</span>) tea.<span class="t">Msg</span> { <span class="k">return</span> <span class="f">tickMsg</span>(t) })
+}
+
+<span class="k">type</span> model <span class="k">struct</span> {
+	bar progress.<span class="t">Model</span>
+}
+
+<span class="k">func</span> <span class="f">initialModel</span>() model {
+	<span class="k">return</span> model{bar: progress.<span class="f">New</span>(progress.<span class="f">WithDefaultBlend</span>(), progress.<span class="f">WithWidth</span>(<span class="n">40</span>))}
+}
+
+<span class="k">func</span> (m model) <span class="f">Init</span>() tea.<span class="t">Cmd</span> { <span class="k">return</span> <span class="f">tickCmd</span>() }
+
+<span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+	<span class="k">switch</span> msg := msg.(<span class="k">type</span>) {
+	<span class="k">case</span> tea.<span class="t">KeyPressMsg</span>:
+		<span class="k">if</span> s := msg.<span class="f">String</span>(); s == <span class="s">&quot;q&quot;</span> || s == <span class="s">&quot;ctrl+c&quot;</span> {
+			<span class="k">return</span> m, tea.<span class="t">Quit</span>
+		}
+	<span class="k">case</span> tea.<span class="t">WindowSizeMsg</span>:
+		m.bar.<span class="f">SetWidth</span>(<span class="b">min</span>(msg.<span class="t">Width</span>-<span class="n">4</span>, <span class="n">60</span>))
+	<span class="k">case</span> tickMsg:
+		<span class="k">if</span> m.bar.<span class="f">Percent</span>() &gt;= <span class="n">1.0</span> {
+			<span class="k">return</span> m, tea.<span class="t">Quit</span>
+		}
+		<span class="c">// Two commands: the bar&#x27;s animation and our next tick.</span>
+		<span class="k">return</span> m, tea.<span class="f">Batch</span>(m.bar.<span class="f">IncrPercent</span>(<span class="n">0.1</span>), <span class="f">tickCmd</span>())
+	<span class="k">case</span> progress.<span class="t">FrameMsg</span>:
+		<span class="k">var</span> cmd tea.<span class="t">Cmd</span>
+		m.bar, cmd = m.bar.<span class="f">Update</span>(msg) <span class="c">// keeps the animation running</span>
+		<span class="k">return</span> m, cmd
+	}
+	<span class="k">return</span> m, <span class="b">nil</span>
+}
+
+<span class="k">func</span> (m model) <span class="f">View</span>() tea.<span class="t">View</span> {
+	<span class="k">return</span> tea.<span class="f">NewView</span>(<span class="s">&quot;\n  Installing packages...\n\n  &quot;</span> + m.bar.<span class="f">View</span>() + <span class="s">&quot;\n\n  q quit\n&quot;</span>)
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="k">if</span> _, err := tea.<span class="f">NewProgram</span>(<span class="f">initialModel</span>()).<span class="f">Run</span>(); err != <span class="b">nil</span> {
+		fmt.<span class="f">Println</span>(<span class="s">&quot;error:&quot;</span>, err)
+		os.<span class="f">Exit</span>(<span class="n">1</span>)
+	}
+}</code></pre></div>
+<div class="exnav"><a href="spinner_basic.html">← spinner_basic</a><a href="../examples.html">all examples</a><a href="timer_stopwatch.html">timer_stopwatch →</a></div>
+<script type="text/plain" id="rawsrc">// Bubbles example - animated progress bar
+//
+// Example complexity rating: [★★☆☆] 2/4
+//
+// progress.SetPercent returns a Cmd that animates the bar (spring
+// physics) by sending progress.FrameMsg. You must forward FrameMsg to
+// the bar's Update, or the animation freezes. Progress itself comes from
+// a tea.Tick loop here.
+//
+// Keys: q quit
+package main
+
+import (
+	"fmt"
+	"os"
+	"time"
+
+	"charm.land/bubbles/v2/progress"
+	tea "charm.land/bubbletea/v2"
+)
+
+type tickMsg time.Time
+
+func tickCmd() tea.Cmd {
+	return tea.Tick(500*time.Millisecond, func(t time.Time) tea.Msg { return tickMsg(t) })
+}
+
+type model struct {
+	bar progress.Model
+}
+
+func initialModel() model {
+	return model{bar: progress.New(progress.WithDefaultBlend(), progress.WithWidth(40))}
+}
+
+func (m model) Init() tea.Cmd { return tickCmd() }
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyPressMsg:
+		if s := msg.String(); s == "q" || s == "ctrl+c" {
+			return m, tea.Quit
+		}
+	case tea.WindowSizeMsg:
+		m.bar.SetWidth(min(msg.Width-4, 60))
+	case tickMsg:
+		if m.bar.Percent() >= 1.0 {
+			return m, tea.Quit
+		}
+		// Two commands: the bar's animation and our next tick.
+		return m, tea.Batch(m.bar.IncrPercent(0.1), tickCmd())
+	case progress.FrameMsg:
+		var cmd tea.Cmd
+		m.bar, cmd = m.bar.Update(msg) // keeps the animation running
+		return m, cmd
+	}
+	return m, nil
+}
+
+func (m model) View() tea.View {
+	return tea.NewView("\n  Installing packages...\n\n  " + m.bar.View() + "\n\n  q quit\n")
+}
+
+func main() {
+	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - spinner basic</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example audio">
+<div class="exnav"><a href="viewport_pager.html">← viewport_pager</a><a href="../examples.html">all examples</a><a href="progress_bar.html">progress_bar →</a></div>
+<h1><span class="lib">Bubbles</span> · spinner while work runs in the background <span class="difficulty">⭐☆☆☆</span></h1>
+<p class="exdesc">A spinner animates by sending itself spinner.TickMsg. Start it from Init with m.spinner.Tick and keep forwarding TickMsg to its Update. tea.Batch starts the spinner AND the real work at the same time.</p>
+<p class="keys">Keys: s change spinner, q quit</p>
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full"><span style="color:#ff5faf">⢿ </span> Downloading assets...
+
+s change spinner • q quit</pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><span class="chip type">tea.Cmd</span> <span class="chip type">tea.Msg</span> <span class="chip type">spinner.Spinner</span> <span class="chip type">spinner.Dot</span> <span class="chip type">spinner.Line</span> <span class="chip type">spinner.MiniDot</span> <span class="chip type">spinner.Jump</span> <span class="chip type">spinner.Pulse</span> <span class="chip type">spinner.Points</span> <span class="chip type">spinner.Globe</span> <span class="chip type">spinner.Moon</span> <span class="chip type">spinner.Monkey</span> <span class="chip type">spinner.Model</span> <a class="chip audio" href="../cheatsheet.html#fn-spinner-New">spinner.New</a> <a class="chip audio" href="../cheatsheet.html#fn-spinner-WithSpinner">spinner.WithSpinner</a> <a class="chip audio" href="../cheatsheet.html#fn-spinner-WithStyle">spinner.WithStyle</a> <a class="chip audio" href="../cheatsheet.html#fn-tea-Batch">tea.Batch</a> <a class="chip audio" href="../cheatsheet.html#fn-spinner-Tick">spinner.Tick</a> <span class="chip type">tea.Model</span> <span class="chip type">spinner.TickMsg</span> <a class="chip audio" href="../cheatsheet.html#fn-spinner-Update">spinner.Update</a> <span class="chip type">tea.KeyPressMsg</span> <a class="chip audio" href="../cheatsheet.html#fn-tea-Quit">tea.Quit</a> <span class="chip type">tea.View</span> <a class="chip audio" href="../cheatsheet.html#fn-tea-NewView">tea.NewView</a> <a class="chip audio" href="../cheatsheet.html#fn-spinner-View">spinner.View</a> <a class="chip audio" href="../cheatsheet.html#fn-tea-NewProgram">tea.NewProgram</a> <a class="chip audio" href="../cheatsheet.html#fn-lipgloss-NewStyle">lipgloss.NewStyle</a> <a class="chip audio" href="../cheatsheet.html#fn-lipgloss-Foreground">lipgloss.Foreground</a> <a class="chip audio" href="../cheatsheet.html#fn-lipgloss-Color">lipgloss.Color</a> <a class="chip audio" href="../cheatsheet.html#fn-tea-Run">tea.Run</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir spinner_basic &amp;&amp; cd spinner_basic
+go mod init spinner_basic
+# save the code below as main.go, then:
+go get charm.land/bubbletea/v2@v2.1.2 charm.land/lipgloss/v2@v2.0.6 charm.land/bubbles/v2@v2.2.2
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84</pre><pre class="code"><code><span class="c">// Bubbles example - spinner while work runs in the background</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★☆☆☆] 1/4</span>
+<span class="c">//</span>
+<span class="c">// A spinner animates by sending itself spinner.TickMsg. Start it from</span>
+<span class="c">// Init with m.spinner.Tick and keep forwarding TickMsg to its Update.</span>
+<span class="c">// tea.Batch starts the spinner AND the real work at the same time.</span>
+<span class="c">//</span>
+<span class="c">// Keys: s change spinner, q quit</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+	<span class="s">&quot;time&quot;</span>
+
+	<span class="s">&quot;charm.land/bubbles/v2/spinner&quot;</span>
+	tea <span class="s">&quot;charm.land/bubbletea/v2&quot;</span>
+	<span class="s">&quot;charm.land/lipgloss/v2&quot;</span>
+)
+
+<span class="k">type</span> doneMsg <span class="k">struct</span>{}
+
+<span class="k">func</span> <span class="f">download</span>() tea.<span class="t">Cmd</span> {
+	<span class="k">return</span> <span class="k">func</span>() tea.<span class="t">Msg</span> {
+		time.<span class="f">Sleep</span>(<span class="n">4</span> * time.<span class="t">Second</span>)
+		<span class="k">return</span> doneMsg{}
+	}
+}
+
+<span class="k">var</span> spinners = []spinner.<span class="t">Spinner</span>{spinner.<span class="t">Dot</span>, spinner.<span class="t">Line</span>, spinner.<span class="t">MiniDot</span>, spinner.<span class="t">Jump</span>, spinner.<span class="t">Pulse</span>, spinner.<span class="t">Points</span>, spinner.<span class="t">Globe</span>, spinner.<span class="t">Moon</span>, spinner.<span class="t">Monkey</span>}
+
+<span class="k">type</span> model <span class="k">struct</span> {
+	spinner spinner.<span class="t">Model</span>
+	kind    <span class="b">int</span>
+	done    <span class="b">bool</span>
+}
+
+<span class="k">func</span> <span class="f">initialModel</span>() model {
+	s := spinner.<span class="f">New</span>(
+		spinner.<span class="f">WithSpinner</span>(spinner.<span class="t">Dot</span>),
+		spinner.<span class="f">WithStyle</span>(lipgloss.<span class="f">NewStyle</span>().<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;205&quot;</span>))),
+	)
+	<span class="k">return</span> model{spinner: s}
+}
+
+<span class="k">func</span> (m model) <span class="f">Init</span>() tea.<span class="t">Cmd</span> {
+	<span class="k">return</span> tea.<span class="f">Batch</span>(m.spinner.<span class="t">Tick</span>, <span class="f">download</span>()) <span class="c">// animate + work concurrently</span>
+}
+
+<span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+	<span class="k">switch</span> msg := msg.(<span class="k">type</span>) {
+	<span class="k">case</span> doneMsg:
+		m.done = <span class="b">true</span>
+		<span class="k">return</span> m, <span class="b">nil</span> <span class="c">// no more ticks: the spinner stops</span>
+	<span class="k">case</span> spinner.<span class="t">TickMsg</span>:
+		<span class="k">var</span> cmd tea.<span class="t">Cmd</span>
+		m.spinner, cmd = m.spinner.<span class="f">Update</span>(msg)
+		<span class="k">return</span> m, cmd <span class="c">// returns the NEXT tick</span>
+	<span class="k">case</span> tea.<span class="t">KeyPressMsg</span>:
+		<span class="k">switch</span> msg.<span class="f">String</span>() {
+		<span class="k">case</span> <span class="s">&quot;s&quot;</span>:
+			m.kind = (m.kind + <span class="n">1</span>) % <span class="b">len</span>(spinners)
+			m.spinner.<span class="t">Spinner</span> = <span class="f">spinners</span>[m.kind]
+		<span class="k">case</span> <span class="s">&quot;q&quot;</span>, <span class="s">&quot;ctrl+c&quot;</span>:
+			<span class="k">return</span> m, tea.<span class="t">Quit</span>
+		}
+	}
+	<span class="k">return</span> m, <span class="b">nil</span>
+}
+
+<span class="k">func</span> (m model) <span class="f">View</span>() tea.<span class="t">View</span> {
+	<span class="k">if</span> m.done {
+		<span class="k">return</span> tea.<span class="f">NewView</span>(<span class="s">&quot;✔ Download complete!\n\nq quit\n&quot;</span>)
+	}
+	<span class="k">return</span> tea.<span class="f">NewView</span>(fmt.<span class="f">Sprintf</span>(<span class="s">&quot;%s Downloading assets...\n\ns change spinner • q quit\n&quot;</span>, m.spinner.<span class="f">View</span>()))
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="k">if</span> _, err := tea.<span class="f">NewProgram</span>(<span class="f">initialModel</span>()).<span class="f">Run</span>(); err != <span class="b">nil</span> {
+		fmt.<span class="f">Println</span>(<span class="s">&quot;error:&quot;</span>, err)
+		os.<span class="f">Exit</span>(<span class="n">1</span>)
+	}
+}</code></pre></div>
+<div class="exnav"><a href="viewport_pager.html">← viewport_pager</a><a href="../examples.html">all examples</a><a href="progress_bar.html">progress_bar →</a></div>
+<script type="text/plain" id="rawsrc">// Bubbles example - spinner while work runs in the background
+//
+// Example complexity rating: [★☆☆☆] 1/4
+//
+// A spinner animates by sending itself spinner.TickMsg. Start it from
+// Init with m.spinner.Tick and keep forwarding TickMsg to its Update.
+// tea.Batch starts the spinner AND the real work at the same time.
+//
+// Keys: s change spinner, q quit
+package main
+
+import (
+	"fmt"
+	"os"
+	"time"
+
+	"charm.land/bubbles/v2/spinner"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+)
+
+type doneMsg struct{}
+
+func download() tea.Cmd {
+	return func() tea.Msg {
+		time.Sleep(4 * time.Second)
+		return doneMsg{}
+	}
+}
+
+var spinners = []spinner.Spinner{spinner.Dot, spinner.Line, spinner.MiniDot, spinner.Jump, spinner.Pulse, spinner.Points, spinner.Globe, spinner.Moon, spinner.Monkey}
+
+type model struct {
+	spinner spinner.Model
+	kind    int
+	done    bool
+}
+
+func initialModel() model {
+	s := spinner.New(
+		spinner.WithSpinner(spinner.Dot),
+		spinner.WithStyle(lipgloss.NewStyle().Foreground(lipgloss.Color("205"))),
+	)
+	return model{spinner: s}
+}
+
+func (m model) Init() tea.Cmd {
+	return tea.Batch(m.spinner.Tick, download()) // animate + work concurrently
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case doneMsg:
+		m.done = true
+		return m, nil // no more ticks: the spinner stops
+	case spinner.TickMsg:
+		var cmd tea.Cmd
+		m.spinner, cmd = m.spinner.Update(msg)
+		return m, cmd // returns the NEXT tick
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "s":
+			m.kind = (m.kind + 1) % len(spinners)
+			m.spinner.Spinner = spinners[m.kind]
+		case "q", "ctrl+c":
+			return m, tea.Quit
+		}
+	}
+	return m, nil
+}
+
+func (m model) View() tea.View {
+	if m.done {
+		return tea.NewView("✔ Download complete!\n\nq quit\n")
+	}
+	return tea.NewView(fmt.Sprintf("%s Downloading assets...\n\ns change spinner • q quit\n", m.spinner.View()))
+}
+
+func main() {
+	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - list default</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example text">
+<div class="exnav"><a href="textinput_form.html">← textinput_form</a><a href="../examples.html">all examples</a><a href="paginator_pages.html">paginator_pages →</a></div>
+<h1><span class="lib">Bubbles</span> · list with the default delegate <span class="difficulty">⭐⭐☆☆</span></h1>
+<p class="exdesc">list.Model gives you navigation, pagination, fuzzy filtering (/) and a help line for free. Items implement list.Item (FilterValue); the DefaultDelegate also wants Title() and Description(). The list needs a size: set it from tea.WindowSizeMsg.</p>
+<p class="keys">Keys: ↑/↓ move, / filter, enter choose, q quit</p>
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full">                                                    
+    <span style="background:#5f5fd7"> </span><span style="color:#ffffd7;background:#5f5fd7">Sci-fi shelf</span><span style="background:#5f5fd7"> </span>                                  
+                                                    
+    <span style="color:#777777">8 books</span>                                         
+                                                    
+    <span style="color:#dddddd">Dune</span>                                            
+    <span style="color:#777777">Frank Herbert</span>                                   
+                                                    
+    <span style="color:#dddddd">Neuromancer</span>                                     
+    <span style="color:#777777">William Gibson</span>                                  
+                                                    
+  <span style="color:#ad58b4">│</span> <span style="color:#ee6ff8">The Left Hand of Darkness</span>                       
+  <span style="color:#ad58b4">│</span> <span style="color:#ad58b4">Ursula K. Le Guin</span>                               
+                                                    
+    <span style="color:#dddddd">Foundation</span>                                      
+    <span style="color:#777777">Isaac Asimov</span>                                    
+                                                    
+    <span style="color:#dddddd">Hyperion</span>                                        
+    <span style="color:#777777">Dan Simmons</span>                                     
+                                                    
+    <span style="color:#979797">•</span><span style="color:#3c3c3c">•</span>                                              
+                                                    
+    <span style="color:#626262">↑/k</span> <span style="color:#4a4a4a">up</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">↓/j</span> <span style="color:#4a4a4a">down</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">/</span> <span style="color:#4a4a4a">filter</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">q</span> <span style="color:#4a4a4a">quit</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">?</span> <span style="color:#4a4a4a">more</span>  
+                                                    </pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><span class="chip type">list.Model</span> <span class="chip type">list.Item</span> <a class="chip text" href="../cheatsheet.html#fn-list-New">list.New</a> <a class="chip text" href="../cheatsheet.html#fn-list-NewDefaultDelegate">list.NewDefaultDelegate</a> <span class="chip type">tea.Cmd</span> <span class="chip type">tea.Msg</span> <span class="chip type">tea.Model</span> <span class="chip type">tea.WindowSizeMsg</span> <a class="chip text" href="../cheatsheet.html#fn-list-SetSize">list.SetSize</a> <span class="chip type">tea.KeyPressMsg</span> <a class="chip text" href="../cheatsheet.html#fn-list-FilterState">list.FilterState</a> <span class="chip type">list.Filtering</span> <a class="chip text" href="../cheatsheet.html#fn-list-SelectedItem">list.SelectedItem</a> <a class="chip text" href="../cheatsheet.html#fn-list-NewStatusMessage">list.NewStatusMessage</a> <a class="chip text" href="../cheatsheet.html#fn-list-Update">list.Update</a> <span class="chip type">tea.View</span> <a class="chip text" href="../cheatsheet.html#fn-tea-NewView">tea.NewView</a> <a class="chip text" href="../cheatsheet.html#fn-list-View">list.View</a> <a class="chip text" href="../cheatsheet.html#fn-tea-NewProgram">tea.NewProgram</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-NewStyle">lipgloss.NewStyle</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-Margin">lipgloss.Margin</a> <a class="chip text" href="../cheatsheet.html#fn-list-SetStatusBarItemName">list.SetStatusBarItemName</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-GetFrameSize">lipgloss.GetFrameSize</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-Render">lipgloss.Render</a> <a class="chip text" href="../cheatsheet.html#fn-tea-Run">tea.Run</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir list_default &amp;&amp; cd list_default
+go mod init list_default
+# save the code below as main.go, then:
+go get charm.land/bubbletea/v2@v2.1.2 charm.land/lipgloss/v2@v2.0.6 charm.land/bubbles/v2@v2.2.2
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88</pre><pre class="code"><code><span class="c">// Bubbles example - list with the default delegate</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★★☆☆] 2/4</span>
+<span class="c">//</span>
+<span class="c">// list.Model gives you navigation, pagination, fuzzy filtering (/) and a</span>
+<span class="c">// help line for free. Items implement list.Item (FilterValue); the</span>
+<span class="c">// DefaultDelegate also wants Title() and Description().</span>
+<span class="c">// The list needs a size: set it from tea.WindowSizeMsg.</span>
+<span class="c">//</span>
+<span class="c">// Keys: ↑/↓ move, / filter, enter choose, q quit</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+
+	<span class="s">&quot;charm.land/bubbles/v2/list&quot;</span>
+	tea <span class="s">&quot;charm.land/bubbletea/v2&quot;</span>
+	<span class="s">&quot;charm.land/lipgloss/v2&quot;</span>
+)
+
+<span class="k">var</span> docStyle = lipgloss.<span class="f">NewStyle</span>().<span class="f">Margin</span>(<span class="n">1</span>, <span class="n">2</span>)
+
+<span class="c">// book satisfies list.DefaultItem.</span>
+<span class="k">type</span> book <span class="k">struct</span>{ title, author <span class="b">string</span> }
+
+<span class="k">func</span> (b book) <span class="f">Title</span>() <span class="b">string</span>       { <span class="k">return</span> b.title }
+<span class="k">func</span> (b book) <span class="f">Description</span>() <span class="b">string</span> { <span class="k">return</span> b.author }
+<span class="k">func</span> (b book) <span class="f">FilterValue</span>() <span class="b">string</span> { <span class="k">return</span> b.title + <span class="s">&quot; &quot;</span> + b.author }
+
+<span class="k">type</span> model <span class="k">struct</span> {
+	list   list.<span class="t">Model</span>
+	chosen <span class="b">string</span>
+}
+
+<span class="k">func</span> <span class="f">initialModel</span>() model {
+	items := []list.<span class="t">Item</span>{
+		book{<span class="s">&quot;Dune&quot;</span>, <span class="s">&quot;Frank Herbert&quot;</span>},
+		book{<span class="s">&quot;Neuromancer&quot;</span>, <span class="s">&quot;William Gibson&quot;</span>},
+		book{<span class="s">&quot;The Left Hand of Darkness&quot;</span>, <span class="s">&quot;Ursula K. Le Guin&quot;</span>},
+		book{<span class="s">&quot;Foundation&quot;</span>, <span class="s">&quot;Isaac Asimov&quot;</span>},
+		book{<span class="s">&quot;Hyperion&quot;</span>, <span class="s">&quot;Dan Simmons&quot;</span>},
+		book{<span class="s">&quot;Snow Crash&quot;</span>, <span class="s">&quot;Neal Stephenson&quot;</span>},
+		book{<span class="s">&quot;Solaris&quot;</span>, <span class="s">&quot;Stanisław Lem&quot;</span>},
+		book{<span class="s">&quot;Blindsight&quot;</span>, <span class="s">&quot;Peter Watts&quot;</span>},
+	}
+	l := list.<span class="f">New</span>(items, list.<span class="f">NewDefaultDelegate</span>(), <span class="n">0</span>, <span class="n">0</span>) <span class="c">// size comes later</span>
+	l.<span class="t">Title</span> = <span class="s">&quot;Sci-fi shelf&quot;</span>
+	l.<span class="f">SetStatusBarItemName</span>(<span class="s">&quot;book&quot;</span>, <span class="s">&quot;books&quot;</span>)
+	<span class="k">return</span> model{list: l}
+}
+
+<span class="k">func</span> (m model) <span class="f">Init</span>() tea.<span class="t">Cmd</span> { <span class="k">return</span> <span class="b">nil</span> }
+
+<span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+	<span class="k">switch</span> msg := msg.(<span class="k">type</span>) {
+	<span class="k">case</span> tea.<span class="t">WindowSizeMsg</span>:
+		h, v := docStyle.<span class="f">GetFrameSize</span>() <span class="c">// subtract the margins</span>
+		m.list.<span class="f">SetSize</span>(msg.<span class="t">Width</span>-h, msg.<span class="t">Height</span>-v)
+	<span class="k">case</span> tea.<span class="t">KeyPressMsg</span>:
+		<span class="c">// While the user types a filter, keys belong to the filter input.</span>
+		<span class="k">if</span> m.list.<span class="f">FilterState</span>() == list.<span class="t">Filtering</span> {
+			<span class="k">break</span>
+		}
+		<span class="k">if</span> msg.<span class="f">String</span>() == <span class="s">&quot;enter&quot;</span> {
+			<span class="k">if</span> b, ok := m.list.<span class="f">SelectedItem</span>().(book); ok {
+				m.chosen = b.title
+				<span class="k">return</span> m, m.list.<span class="f">NewStatusMessage</span>(<span class="s">&quot;Picked &quot;</span> + b.title)
+			}
+		}
+	}
+	<span class="k">var</span> cmd tea.<span class="t">Cmd</span>
+	m.list, cmd = m.list.<span class="f">Update</span>(msg) <span class="c">// the list handles q, ↑/↓, / ...</span>
+	<span class="k">return</span> m, cmd
+}
+
+<span class="k">func</span> (m model) <span class="f">View</span>() tea.<span class="t">View</span> {
+	v := tea.<span class="f">NewView</span>(docStyle.<span class="f">Render</span>(m.list.<span class="f">View</span>()))
+	v.<span class="t">AltScreen</span> = <span class="b">true</span>
+	<span class="k">return</span> v
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="k">if</span> _, err := tea.<span class="f">NewProgram</span>(<span class="f">initialModel</span>()).<span class="f">Run</span>(); err != <span class="b">nil</span> {
+		fmt.<span class="f">Println</span>(<span class="s">&quot;error:&quot;</span>, err)
+		os.<span class="f">Exit</span>(<span class="n">1</span>)
+	}
+}</code></pre></div>
+<div class="exnav"><a href="textinput_form.html">← textinput_form</a><a href="../examples.html">all examples</a><a href="paginator_pages.html">paginator_pages →</a></div>
+<script type="text/plain" id="rawsrc">// Bubbles example - list with the default delegate
+//
+// Example complexity rating: [★★☆☆] 2/4
+//
+// list.Model gives you navigation, pagination, fuzzy filtering (/) and a
+// help line for free. Items implement list.Item (FilterValue); the
+// DefaultDelegate also wants Title() and Description().
+// The list needs a size: set it from tea.WindowSizeMsg.
+//
+// Keys: ↑/↓ move, / filter, enter choose, q quit
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+)
+
+var docStyle = lipgloss.NewStyle().Margin(1, 2)
+
+// book satisfies list.DefaultItem.
+type book struct{ title, author string }
+
+func (b book) Title() string       { return b.title }
+func (b book) Description() string { return b.author }
+func (b book) FilterValue() string { return b.title + " " + b.author }
+
+type model struct {
+	list   list.Model
+	chosen string
+}
+
+func initialModel() model {
+	items := []list.Item{
+		book{"Dune", "Frank Herbert"},
+		book{"Neuromancer", "William Gibson"},
+		book{"The Left Hand of Darkness", "Ursula K. Le Guin"},
+		book{"Foundation", "Isaac Asimov"},
+		book{"Hyperion", "Dan Simmons"},
+		book{"Snow Crash", "Neal Stephenson"},
+		book{"Solaris", "Stanisław Lem"},
+		book{"Blindsight", "Peter Watts"},
+	}
+	l := list.New(items, list.NewDefaultDelegate(), 0, 0) // size comes later
+	l.Title = "Sci-fi shelf"
+	l.SetStatusBarItemName("book", "books")
+	return model{list: l}
+}
+
+func (m model) Init() tea.Cmd { return nil }
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		h, v := docStyle.GetFrameSize() // subtract the margins
+		m.list.SetSize(msg.Width-h, msg.Height-v)
+	case tea.KeyPressMsg:
+		// While the user types a filter, keys belong to the filter input.
+		if m.list.FilterState() == list.Filtering {
+			break
+		}
+		if msg.String() == "enter" {
+			if b, ok := m.list.SelectedItem().(book); ok {
+				m.chosen = b.title
+				return m, m.list.NewStatusMessage("Picked " + b.title)
+			}
+		}
+	}
+	var cmd tea.Cmd
+	m.list, cmd = m.list.Update(msg) // the list handles q, ↑/↓, / ...
+	return m, cmd
+}
+
+func (m model) View() tea.View {
+	v := tea.NewView(docStyle.Render(m.list.View()))
+	v.AltScreen = true
+	return v
+}
+
+func main() {
+	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

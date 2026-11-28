@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - examples</title>
+<link rel="stylesheet" href="common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="index.html">about</a><a id="active" href="examples.html">examples</a><a href="cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content">
+<p>Examples are organized by colors depending on the library module they focus on. Every example is a complete
+<code>main.go</code> that compiles against the versions above; the thumbnails are the real output of each program's
+<code>View()</code>.</p>
+<p>Click on a module to filter examples:</p>
+<div id="filter_menu"><div class="filter legendButton all active" data-filter="all">all</div><div class="filter legendButton core" data-filter="tea">bubbletea</div><div class="filter legendButton shapes" data-filter="lipgloss">lipgloss</div><div class="filter legendButton textures" data-filter="input">input</div><div class="filter legendButton text" data-filter="collections">collections</div><div class="filter legendButton models" data-filter="navigation">navigation</div><div class="filter legendButton audio" data-filter="feedback">feedback</div><div class="filter legendButton shaders" data-filter="lgx">lipgloss/x</div></div>
+<p id="filter_function_label">Or filter by the functions used in the example:</p>
+<div id="filter_function"><input type="text" placeholder="function name, e.g. tea.Batch or SetSize"><p id="matches_counter"></p></div>
+<p>Examples are rated by complexity with stars: one star (⭐☆☆☆) for the basic ones and four stars (⭐⭐⭐⭐) for the most complex.</p>
+<div id="container"><div class="mix fcore" data-mod="tea" data-name="tea_basic_counter" data-fns="tea.Cmd tea.Msg tea.Model tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram tea.Run"><a href="examples/tea_basic_counter.html" title="The smallest complete Bubble Tea program: a Model that holds a number, Update reacts to key presses and View renders the current state."><pre class="term thumb">Counter: 3
+
+↑/k increment • ↓/j decrement • q quit</pre><div class="extext"><p>basic counter</p></div></a><div class="cardlabel"><span class="difficulty">⭐☆☆☆</span> <span class="exname">tea_basic_counter</span></div></div>
+<div class="mix fcore" data-mod="tea" data-name="tea_window_size" data-fns="tea.Cmd tea.Msg tea.Model tea.WindowSizeMsg tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram tea.Run"><a href="examples/tea_window_size.html" title="tea.WindowSizeMsg is delivered once at start-up and again on every terminal resize. Store it in the model so View can adapt to the size. Setting View.AltScreen draws on the full-screen alternate buffer."><pre class="term thumb">════════════════════════════════════════════════════════════════════════════════
+
+  terminal is 80 columns × 24 rows
+
+  resize me, or press q</pre><div class="extext"><p>window size and alt screen</p></div></a><div class="cardlabel"><span class="difficulty">⭐☆☆☆</span> <span class="exname">tea_window_size</span></div></div>
+<div class="mix fcore" data-mod="tea" data-name="tea_async_cmd" data-fns="tea.Cmd tea.Msg tea.Model tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram tea.Run"><a href="examples/tea_async_cmd.html" title="A tea.Cmd is just func() tea.Msg. Bubble Tea runs it in its own goroutine, so slow work (HTTP, disk, database) never freezes the UI. The result comes back to Update as a message: success or error."><pre class="term thumb">Lisbon: 18°C
+
+f fetch again • q quit</pre><div class="extext"><p>async command (I/O without blocking the UI)</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">tea_async_cmd</span></div></div>
+<div class="mix fcore" data-mod="tea" data-name="tea_mouse" data-fns="tea.Mouse tea.Cmd tea.Msg tea.Model tea.MouseClickMsg tea.MouseWheelMsg tea.MouseWheelUp tea.MouseWheelDown tea.MouseMotionMsg tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.MouseModeAllMotion tea.NewProgram tea.Run"><a href="examples/tea_mouse.html" title="Mouse reporting is enabled per frame through View.MouseMode. Clicks, releases, wheel and motion arrive as different message types, all implementing tea.MouseMsg (call .Mouse() to get X, Y and Button)."><pre class="term thumb">clicks: 0   last: 
+scroll: 0
+hover:  
+
+click, scroll or move the mouse • q quit</pre><div class="extext"><p>mouse events</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">tea_mouse</span></div></div>
+<div class="mix fcore" data-mod="tea" data-name="tea_tick" data-fns="tea.Cmd tea.Tick tea.Msg tea.Model tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram tea.Run"><a href="examples/tea_tick.html" title="tea.Tick fires ONE message after a duration. To get a repeating timer, return a new Tick from Update every time you receive the tick message. tea.Every is the same idea, but aligned with the system clock."><pre class="term thumb">T-minus  7  (running)
+
+space pause • r reset • q quit</pre><div class="extext"><p>tick loop (countdown)</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">tea_tick</span></div></div>
+<div class="mix fcore" data-mod="tea" data-name="tea_batch_sequence" data-fns="tea.Cmd tea.Msg tea.Model tea.KeyPressMsg tea.Batch tea.Sequence tea.Println tea.Quit tea.View tea.NewView tea.NewProgram tea.Run"><a href="examples/tea_batch_sequence.html" title="tea.Batch runs commands concurrently: results arrive in any order. tea.Sequence runs them one after another: results arrive in order. tea.Println prints a permanent line above the program&#x27;s view."><pre class="term thumb">b batch • s sequence • c clear • q quit
+
+— batch —
+slow   finished (900ms)
+medium finished (500ms)
+fast   finished (100ms)</pre><div class="extext"><p>tea.Batch vs tea.Sequence</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐⭐☆</span> <span class="exname">tea_batch_sequence</span></div></div>
+<div class="mix fcore" data-mod="tea" data-name="tea_exec_editor" data-fns="tea.Cmd tea.ExecProcess tea.Msg tea.Model tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram tea.Run"><a href="examples/tea_exec_editor.html" title="tea.ExecProcess pauses the program, gives the terminal to another interactive process (vim, nano, less...) and resumes when it exits. The callback turns the exit error into a message for Update."><pre class="term thumb">Your text:
+
+(empty)
+
+e edit in $EDITOR • q quit</pre><div class="extext"><p>run an external program ($EDITOR)</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐⭐☆</span> <span class="exname">tea_exec_editor</span></div></div>
+<div class="mix fcore" data-mod="tea" data-name="tea_program_send" data-fns="tea.Cmd tea.Msg tea.Model tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram tea.Send tea.Run"><a href="examples/tea_program_send.html" title="Sometimes events come from somewhere Bubble Tea doesn&#x27;t control: a websocket, a file watcher, another goroutine. Keep the *tea.Program and call p.Send(msg): the message goes through Update like any other."><pre class="term thumb">Live log (from another goroutine):
+
+
+q quit</pre><div class="extext"><p>send messages from outside (Program.Send)</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐⭐☆</span> <span class="exname">tea_program_send</span></div></div>
+<div class="mix fshapes" data-mod="lipgloss" data-name="lipgloss_borders" data-fns="lipgloss.NormalBorder lipgloss.RoundedBorder lipgloss.ThickBorder lipgloss.DoubleBorder lipgloss.BlockBorder lipgloss.ASCIIBorder lipgloss.NewStyle lipgloss.Border lipgloss.BorderForeground lipgloss.Color lipgloss.Padding lipgloss.Width lipgloss.Align lipgloss.Render lipgloss.JoinHorizontal lipgloss.Println lipgloss.JoinVertical"><a href="examples/lipgloss_borders.html" title="Border sets the border shape (and optionally which sides to draw). BorderForeground colors it. Borders add to the rendered size, padding sits inside the border and margin outside."><pre class="term thumb"><span style="color:#ff5f87">┌───────────┐</span><span style="color:#5fafff">╭───────────╮</span><span style="color:#87d787">┏━━━━━━━━━━━┓</span>
+<span style="color:#ff5f87">│</span>  Normal   <span style="color:#ff5f87">│</span><span style="color:#5fafff">│</span>  Rounded  <span style="color:#5fafff">│</span><span style="color:#87d787">┃</span>   Thick   <span style="color:#87d787">┃</span>
+<span style="color:#ff5f87">└───────────┘</span><span style="color:#5fafff">╰───────────╯</span><span style="color:#87d787">┗━━━━━━━━━━━┛</span>
+<span style="color:#ffd75f">╔═══════════╗</span><span style="color:#af87ff">█████████████</span><span style="color:#d0d0d0">+-----------+</span>
+<span style="color:#ffd75f">║</span>  Double   <span style="color:#ffd75f">║</span><span style="color:#af87ff">█</span>   Block   <span style="color:#af87ff">█</span><span style="color:#d0d0d0">|</span>   ASCII   <span style="color:#d0d0d0">|</span>
+<span style="color:#ffd75f">╚═══════════╝</span><span style="color:#af87ff">█████████████</span><span style="color:#d0d0d0">+-----------+</span>
+bottom border only
+<span style="color:#ff5f87">──────────────────</span></pre><div class="extext"><p>borders gallery</p></div></a><div class="cardlabel"><span class="difficulty">⭐☆☆☆</span> <span class="exname">lipgloss_borders</span></div></div>
+<div class="mix fshapes" data-mod="lipgloss" data-name="lipgloss_styles" data-fns="lipgloss.NewStyle lipgloss.Padding lipgloss.MarginBottom lipgloss.Bold lipgloss.Foreground lipgloss.Color lipgloss.Background lipgloss.Italic lipgloss.Underline lipgloss.Faint lipgloss.Strikethrough lipgloss.Println lipgloss.Render lipgloss.Width lipgloss.Align lipgloss.Reverse"><a href="examples/lipgloss_styles.html" title="A lipgloss.Style is an immutable value: every method returns a NEW style, so you can chain calls and derive variants from a base style. Render applies the style to a string and returns the ANSI result."><pre class="term thumb"><span style="background:#7d56f4">  </span><span style="color:#fafafa;background:#7d56f4;font-weight:bold">Lip Gloss</span><span style="background:#7d56f4">  </span>
+             
+  <span style="color:#ffb86c;font-style:italic">italic + orange</span>  
+                   
+  <span style="color:#50fa7b;text-decoration:underline">u</span><span style="color:#50fa7b;text-decoration:underline">n</span><span style="color:#50fa7b;text-decoration:underline">d</span><span style="color:#50fa7b;text-decoration:underline">e</span><span style="color:#50fa7b;text-decoration:underline">r</span><span style="color:#50fa7b;text-decoration:underline">l</span><span style="color:#50fa7b;text-decoration:underline">i</span><span style="color:#50fa7b;text-decoration:underline">n</span><span style="color:#50fa7b;text-decoration:underline">e</span><span style="color:#50fa7b;text-decoration:underline">d</span><span style="color:#50fa7b;text-decoration:underline"> </span><span style="color:#50fa7b;text-decoration:underline">+</span><span style="color:#50fa7b;text-decoration:underline"> </span><span style="color:#50fa7b;text-decoration:underline">g</span><span style="color:#50fa7b;text-decoration:underline">r</span><span style="color:#50fa7b;text-decoration:underline">e</span><span style="color:#50fa7b;text-decoration:underline">e</span><span style="color:#50fa7b;text-decoration:underline">n</span>  
+                      
+  <span style="opacity:.55;text-decoration:line-through">f</span><span style="opacity:.55;text-decoration:line-through">a</span><span style="opacity:.55;text-decoration:line-through">i</span><span style="opacity:.55;text-decoration:line-through">n</span><span style="opacity:.55;text-decoration:line-through">t</span><span style="text-decoration:line-through"> </span><span style="opacity:.55;text-decoration:line-through">+</span><span style="text-decoration:line-through"> </span><span style="opacity:.55;text-decoration:line-through">s</span><span style="opacity:.55;text-decoration:line-through">t</span><span style="opacity:.55;text-decoration:line-through">r</span><span style="opacity:.55;text-decoration:line-through">i</span><span style="opacity:.55;text-decoration:line-through">k</span><span style="opacity:.55;text-decoration:line-through">e</span><span style="opacity:.55;text-decoration:line-through">t</span><span style="opacity:.55;text-decoration:line-through">h</span><span style="opacity:.55;text-decoration:line-through">r</span><span style="opacity:.55;text-decoration:line-through">o</span><span style="opacity:.55;text-decoration:line-through">u</span><span style="opacity:.55;text-decoration:line-through">g</span><span style="opacity:.55;text-decoration:line-through">h</span>  
+                         
+<span style="color:#1e1e1e;background:#d0d0d0">    </span><span style="color:#1e1e1e;background:#d0d0d0">centered in 30 columns</span><span style="color:#1e1e1e;background:#d0d0d0">    </span></pre><div class="extext"><p>basic styles</p></div></a><div class="cardlabel"><span class="difficulty">⭐☆☆☆</span> <span class="exname">lipgloss_styles</span></div></div>
+<div class="mix fshapes" data-mod="lipgloss" data-name="lipgloss_colors" data-fns="lipgloss.HasDarkBackground lipgloss.LightDark lipgloss.Color lipgloss.Println lipgloss.NewStyle lipgloss.Foreground lipgloss.Render lipgloss.Background lipgloss.Blend1D lipgloss.Padding lipgloss.JoinHorizontal lipgloss.Darken lipgloss.Lighten lipgloss.Complementary"><a href="examples/lipgloss_colors.html" title="lipgloss.Color accepts hex (&quot;#FF5F87&quot;) or ANSI-256 numbers (&quot;205&quot;). Blend1D builds a gradient between color stops. HasDarkBackground asks the terminal its background, and LightDark picks the right variant."><pre class="term thumb"><span style="color:#eeeeee">this text adapts to light/dark terminals</span>
+<span style="background:#000000">  </span><span style="background:#cd3131">  </span><span style="background:#0dbc79">  </span><span style="background:#e5e510">  </span><span style="background:#2472c8">  </span><span style="background:#bc3fbc">  </span><span style="background:#11a8cd">  </span><span style="background:#e5e5e5">  </span><span style="background:#666666">  </span><span style="background:#f14c4c">  </span><span style="background:#23d18b">  </span><span style="background:#f5f543">  </span><span style="background:#3b8eea">  </span><span style="background:#d670d6">  </span><span style="background:#29b8db">  </span><span style="background:#ffffff">  </span>
+<span style="background:#ff5f87"> </span><span style="background:#ff6586"> </span><span style="background:#ff6c84"> </span><span style="background:#ff7283"> </span><span style="background:#ff7882"> </span><span style="background:#ff7e80"> </span><span style="background:#ff837f"> </span><span style="background:#ff897d"> </span><span style="background:#ff8e7c"> </span><span style="background:#ff937a"> </span><span style="background:#ff9879"> </span><span style="background:#ff9e77"> </span><span style="background:#ffa376"> </span><span style="background:#ffa874"> </span><span style="background:#ffad72"> </span><span style="background:#ffb170"> </span><span style="background:#ffb66e"> </span><span style="background:#ffbb6c"> </span><span style="background:#ffc06a"> </span><span style="background:#ffc568"> </span><span style="background:#ffc966"> </span><span style="background:#ffce64"> </span><span style="background:#ffd361"> </span><span style="background:#ffd75f"> </span><span style="background:#ffd75f"> </span><span style="background:#fcd567"> </span><span style="background:#f7d370"> </span><span style="background:#f3d277"> </span><span style="background:#efd07f"> </span><span style="background:#eace87"> </span><span style="background:#e6cc8e"> </span><span style="background:#e1ca95"> </span><span style="background:#dcc89c"> </span><span style="background:#d7c6a3"> </span><span style="background:#d2c5aa"> </span><span style="background:#ccc3b0"> </span><span style="background:#c6c1b7"> </span><span style="background:#c0bfbe"> </span><span style="background:#b9bec5"> </span><span style="background:#b3bccb"> </span><span style="background:#abbad2"> </span><span style="background:#a3b9d8"> </span><span style="background:#9bb7df"> </span><span style="background:#92b5e5"> </span><span style="background:#87b4ec"> </span><span style="background:#7cb2f2"> </span><span style="background:#6fb1f9"> </span><span style="background:#5fafff"> </span>
+<span style="background:#4b3392">  </span><span style="background:#4b3392"> </span><span style="background:#4b3392">  </span><span style="background:#7d56f4">  </span><span style="background:#7d56f4"> </span><span style="background:#7d56f4">  </span><span style="background:#e3bcff">  </span><span style="background:#e3bcff"> </span><span style="background:#e3bcff">  </span><span style="background:#cdf456">  </span><span style="background:#cdf456"> </span><span style="background:#cdf456">  </span>   darken • base • lighten • complementary</pre><div class="extext"><p>colors, gradients and light/dark themes</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">lipgloss_colors</span></div></div>
+<div class="mix fshapes" data-mod="lipgloss" data-name="lipgloss_join" data-fns="lipgloss.NewStyle lipgloss.Border lipgloss.RoundedBorder lipgloss.BorderForeground lipgloss.Color lipgloss.Padding lipgloss.Render lipgloss.Width lipgloss.JoinHorizontal lipgloss.Faint lipgloss.JoinVertical lipgloss.Println lipgloss.Size lipgloss.Printf"><a href="examples/lipgloss_join.html" title="Layout in Lip Gloss is string composition: render each block, then glue blocks side by side (JoinHorizontal) or stacked (JoinVertical). The Position argument aligns blocks of different heights/widths."><pre class="term thumb"><span style="opacity:.55">JoinHorizontal(Top, ...)</span>                
+<span style="color:#7d56f4">╭───────╮</span><span style="color:#7d56f4">╭────────╮</span><span style="color:#7d56f4">╭───────╮</span>            
+<span style="color:#7d56f4">│</span> short <span style="color:#7d56f4">│</span><span style="color:#7d56f4">│</span> a      <span style="color:#7d56f4">│</span><span style="color:#7d56f4">│</span> short <span style="color:#7d56f4">│</span>            
+<span style="color:#7d56f4">│</span> block <span style="color:#7d56f4">│</span><span style="color:#7d56f4">│</span> taller <span style="color:#7d56f4">│</span><span style="color:#7d56f4">│</span> block <span style="color:#7d56f4">│</span>            
+<span style="color:#7d56f4">╰───────╯</span><span style="color:#7d56f4">│</span> block  <span style="color:#7d56f4">│</span><span style="color:#7d56f4">╰───────╯</span>            
+         <span style="color:#7d56f4">│</span> with   <span style="color:#7d56f4">│</span>                     
+         <span style="color:#7d56f4">│</span> lines  <span style="color:#7d56f4">│</span>                     
+         <span style="color:#7d56f4">╰────────╯</span>                     
+<span style="opacity:.55">JoinHorizontal(Bottom, ...)</span>             
+         <span style="color:#7d56f4">╭────────╮</span>                     
+         <span style="color:#7d56f4">│</span> a      <span style="color:#7d56f4">│</span>                     
+         <span style="color:#7d56f4">│</span> taller <span style="color:#7d56f4">│</span>                     
+<span style="color:#7d56f4">╭───────╮</span><span style="color:#7d56f4">│</span> block  <span style="color:#7d56f4">│</span><span style="color:#7d56f4">╭───────╮</span>            
+<span style="color:#7d56f4">│</span> short <span style="color:#7d56f4">│</span><span style="color:#7d56f4">│</span> with   <span style="color:#7d56f4">│</span><span style="color:#7d56f4">│</span> short <span style="color:#7d56f4">│</span>            
+<span style="color:#7d56f4">│</span> block <span style="color:#7d56f4">│</span><span style="color:#7d56f4">│</span> lines  <span style="color:#7d56f4">│</span><span style="color:#7d56f4">│</span> block <span style="color:#7d56f4">│</span>            
+<span style="color:#7d56f4">╰───────╯</span><span style="color:#7d56f4">╰────────╯</span><span style="color:#7d56f4">╰───────╯</span>            
+<span style="color:#7d56f4">╭──────────────────────────────────────╮</span>
+<span style="color:#7d56f4">│</span> a wide block below the others        <span style="color:#7d56f4">│</span>
+<span style="color:#7d56f4">╰──────────────────────────────────────╯</span>
+page is 40×19 cells</pre><div class="extext"><p>JoinHorizontal / JoinVertical layout</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">lipgloss_join</span></div></div>
+<div class="mix fshapes" data-mod="lipgloss" data-name="lipgloss_place" data-fns="tea.Cmd tea.Msg tea.Model tea.WindowSizeMsg tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram lipgloss.NewStyle lipgloss.Border lipgloss.RoundedBorder lipgloss.BorderForeground lipgloss.Color lipgloss.Padding lipgloss.Foreground lipgloss.Background lipgloss.MarginTop lipgloss.MarginRight lipgloss.Underline lipgloss.JoinHorizontal lipgloss.Render lipgloss.JoinVertical lipgloss.Place lipgloss.WithWhitespaceChars lipgloss.WithWhitespaceStyle tea.Run"><a href="examples/lipgloss_place.html" title="lipgloss.Place puts a block inside a width×height area at a given position, filling the rest with whitespace. Combined with tea.WindowSizeMsg it keeps a dialog centered while the terminal resizes."><pre class="term thumb"><span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················</span><span style="color:#874bfd">╭─────────────────────────────────────────────╮</span><span style="color:#383838">·················</span>
+<span style="color:#383838">················</span><span style="color:#874bfd">│</span>                                             <span style="color:#874bfd">│</span><span style="color:#383838">·················</span>
+<span style="color:#383838">················</span><span style="color:#874bfd">│</span>   Are you sure you want to eat marmalade?   <span style="color:#874bfd">│</span><span style="color:#383838">·················</span>
+<span style="color:#383838">················</span><span style="color:#874bfd">│</span>                                             <span style="color:#874bfd">│</span><span style="color:#383838">·················</span>
+<span style="color:#383838">················</span><span style="color:#874bfd">│</span>            <span style="background:#888b7e">   </span><span style="color:#fff7db;background:#888b7e">Yes</span><span style="background:#888b7e">   </span>  <span style="background:#f25d94">   </span><span style="color:#fff7db;background:#f25d94;text-decoration:underline">N</span><span style="color:#fff7db;background:#f25d94;text-decoration:underline">o</span><span style="background:#f25d94">   </span>              <span style="color:#874bfd">│</span><span style="color:#383838">·················</span>
+<span style="color:#383838">················</span><span style="color:#874bfd">│</span>                                             <span style="color:#874bfd">│</span><span style="color:#383838">·················</span>
+<span style="color:#383838">················</span><span style="color:#874bfd">╰─────────────────────────────────────────────╯</span><span style="color:#383838">·················</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span>
+<span style="color:#383838">················································································</span></pre><div class="extext"><p>centering a dialog with Place (inside Bubble Tea)</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">lipgloss_place</span></div></div>
+<div class="mix fshapes" data-mod="lipgloss" data-name="lipgloss_responsive" data-fns="tea.Cmd tea.Msg tea.Model tea.WindowSizeMsg tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram lipgloss.NewStyle lipgloss.Border lipgloss.RoundedBorder lipgloss.BorderForeground lipgloss.Color lipgloss.Padding lipgloss.Bold lipgloss.Foreground lipgloss.Faint lipgloss.Render lipgloss.Height lipgloss.GetHorizontalFrameSize lipgloss.GetVerticalFrameSize lipgloss.Width lipgloss.JoinHorizontal lipgloss.JoinVertical tea.Run"><a href="examples/lipgloss_responsive.html" title="To make boxes fill the terminal you must subtract the &quot;frame&quot; (border + padding + margin) from the available space. GetHorizontalFrameSize and GetVerticalFrameSize give you exactly that number."><pre class="term thumb"><span style="color:#ff5f87;font-weight:bold">Responsive layout</span>                                                       
+<span style="color:#5fafff">╭──────────────────╮</span><span style="color:#5fafff">╭──────────────────────────────────────────────────╮</span>
+<span style="color:#5fafff">│</span> Inbox            <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span> This column takes whatever space is left.        <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span> Drafts           <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span> Sent             <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span> Resize the terminal: both panels follow.         <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span> Archive          <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span> Trash            <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">│</span>                  <span style="color:#5fafff">│</span><span style="color:#5fafff">│</span>                                                  <span style="color:#5fafff">│</span>
+<span style="color:#5fafff">╰──────────────────╯</span><span style="color:#5fafff">╰──────────────────────────────────────────────────╯</span>
+<span style="opacity:.55">80×24 • +/- resize sidebar • q quit</span>                                     </pre><div class="extext"><p>responsive two-column layout</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐⭐☆</span> <span class="exname">lipgloss_responsive</span></div></div>
+<div class="mix ftextures" data-mod="input" data-name="textinput_basic" data-fns="textinput.Model textinput.New tea.Cmd textinput.Blink tea.Msg tea.Model tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram textinput.SetWidth textinput.Focus textinput.Value textinput.Reset textinput.Update textinput.View tea.Run"><a href="examples/textinput_basic.html" title="Every Bubbles component is a small Bubble Tea model: keep it inside your model, forward messages to its Update, and print its View. Focus() returns a Cmd (cursor blink) and the input only reacts to keys while focused."><pre class="term thumb">What&#x27;s your favorite Pokémon?
+
+<span style="color:#e5e5e5">› </span>Bulbasaur<span style="color:#1e1e1e;background:#e5e5e5"> </span>               
+
+enter submit • esc quit</pre><div class="extext"><p>single text input</p></div></a><div class="cardlabel"><span class="difficulty">⭐☆☆☆</span> <span class="exname">textinput_basic</span></div></div>
+<div class="mix ftextures" data-mod="input" data-name="textarea_basic" data-fns="textarea.Model textarea.New tea.Cmd textarea.Blink tea.Msg tea.Model tea.WindowSizeMsg tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram lipgloss.NewStyle lipgloss.Faint textarea.SetWidth textarea.SetHeight textarea.Focus textarea.Focused textarea.Blur textarea.Length textarea.LineCount textarea.Update textarea.Line textarea.Column textarea.View lipgloss.Render tea.Run"><a href="examples/textarea_basic.html" title="textarea is the multi-line sibling of textinput: same Focus/Blur/Value API, plus SetWidth/SetHeight, line numbers and a character limit. Resize it from tea.WindowSizeMsg so it fills the terminal."><pre class="term thumb">Tell me a story.
+
+<span style="color:#e5e5e5">┃ </span><span style="color:#e5e5e5">  1 </span>It was a dark and stormy night.                                           
+<span style="color:#e5e5e5;background:#000000">┃ </span><span style="color:#585858;background:#000000">  2 </span><span style="background:#000000">The terminal blinked.</span><span style="color:#000000;background:#d0d0d0"> </span><span style="background:#000000">                                                    </span>
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="color:#e5e5e5">┃ </span><span style="color:#000000">                                                                          </span>    
+<span style="opacity:.55">line 2, col 22 • esc focus • ctrl+s save • ctrl+c quit  </span></pre><div class="extext"><p>multi-line textarea</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">textarea_basic</span></div></div>
+<div class="mix ftextures" data-mod="input" data-name="textinput_form" data-fns="textinput.Model textinput.New textinput.EchoPassword tea.Cmd textinput.Blink tea.Msg tea.Model tea.KeyPressMsg tea.Quit tea.Batch tea.View tea.NewView tea.NewProgram lipgloss.NewStyle lipgloss.Foreground lipgloss.Color textinput.SetWidth textinput.Focus textinput.Blur lipgloss.Render textinput.View textinput.Value tea.Run"><a href="examples/textinput_form.html" title="Several inputs, only one focused at a time. Moving focus means Blur() on the old one and Focus() on the new one. Each input&#x27;s Update returns a Cmd, so collect them all and return them with tea.Batch. EchoPassword hides the typed characters."><pre class="term thumb">Create account
+
+<span style="color:#6c6c6c">Name:</span>
+<span style="color:#e5e5e5">&gt; </span><span style="color:#e5e5e5">Ada</span><span style="color:#e5e5e5"> </span><span style="color:#e5e5e5">                           </span>
+
+<span style="color:#6c6c6c">Email:</span>
+<span style="color:#e5e5e5">&gt; </span><span style="color:#e5e5e5">ada@example.com</span><span style="color:#e5e5e5"> </span><span style="color:#e5e5e5">               </span>
+
+<span style="color:#ff5f87">Password:</span>
+<span style="color:#e5e5e5">&gt; </span>••••••<span style="color:#1e1e1e;background:#e5e5e5"> </span>                        
+
+<span style="color:#6c6c6c">tab/shift+tab move • enter next • esc quit</span></pre><div class="extext"><p>multi-field form with focus cycling</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐⭐☆</span> <span class="exname">textinput_form</span></div></div>
+<div class="mix ftext" data-mod="collections" data-name="list_default" data-fns="list.Model list.Item list.New list.NewDefaultDelegate tea.Cmd tea.Msg tea.Model tea.WindowSizeMsg list.SetSize tea.KeyPressMsg list.FilterState list.Filtering list.SelectedItem list.NewStatusMessage list.Update tea.View tea.NewView list.View tea.NewProgram lipgloss.NewStyle lipgloss.Margin list.SetStatusBarItemName lipgloss.GetFrameSize lipgloss.Render tea.Run"><a href="examples/list_default.html" title="list.Model gives you navigation, pagination, fuzzy filtering (/) and a help line for free. Items implement list.Item (FilterValue); the DefaultDelegate also wants Title() and Description(). The list needs a size: set it from tea.WindowSizeMsg."><pre class="term thumb">                                                    
+    <span style="background:#5f5fd7"> </span><span style="color:#ffffd7;background:#5f5fd7">Sci-fi shelf</span><span style="background:#5f5fd7"> </span>                                  
+                                                    
+    <span style="color:#777777">8 books</span>                                         
+                                                    
+    <span style="color:#dddddd">Dune</span>                                            
+    <span style="color:#777777">Frank Herbert</span>                                   
+                                                    
+    <span style="color:#dddddd">Neuromancer</span>                                     
+    <span style="color:#777777">William Gibson</span>                                  
+                                                    
+  <span style="color:#ad58b4">│</span> <span style="color:#ee6ff8">The Left Hand of Darkness</span>                       
+  <span style="color:#ad58b4">│</span> <span style="color:#ad58b4">Ursula K. Le Guin</span>                               
+                                                    
+    <span style="color:#dddddd">Foundation</span>                                      
+    <span style="color:#777777">Isaac Asimov</span>                                    
+                                                    
+    <span style="color:#dddddd">Hyperion</span>                                        
+    <span style="color:#777777">Dan Simmons</span>                                     
+                                                    
+    <span style="color:#979797">•</span><span style="color:#3c3c3c">•</span>                                              
+                                                    
+    <span style="color:#626262">↑/k</span> <span style="color:#4a4a4a">up</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">↓/j</span> <span style="color:#4a4a4a">down</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">/</span> <span style="color:#4a4a4a">filter</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">q</span> <span style="color:#4a4a4a">quit</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">?</span> <span style="color:#4a4a4a">more</span>  
+                                                    </pre><div class="extext"><p>list with the default delegate</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">list_default</span></div></div>
+<div class="mix ftext" data-mod="collections" data-name="paginator_pages" data-fns="paginator.Model paginator.New paginator.Dots tea.Cmd tea.Msg tea.Model tea.KeyPressMsg tea.Quit tea.View tea.NewView tea.NewProgram lipgloss.NewStyle lipgloss.Foreground lipgloss.Color lipgloss.Render paginator.SetTotalPages paginator.Update paginator.GetSliceBounds paginator.View tea.Run"><a href="examples/paginator_pages.html" title="paginator only does the math and the &quot;• ○ ○&quot; indicator: you tell it how many items exist (SetTotalPages) and ask GetSliceBounds which part of YOUR slice belongs on the current page."><pre class="term thumb">
+  Paginator
+
+  • Item 09
+  • Item 10
+  • Item 11
+  • Item 12
+  • Item 13
+  • Item 14
+  • Item 15
+  • Item 16
+
+  <span style="color:#4e4e4e">•</span><span style="color:#ff5f87">•</span><span style="color:#4e4e4e">•</span><span style="color:#4e4e4e">•</span><span style="color:#4e4e4e">•</span><span style="color:#4e4e4e">•</span>
+
+  h/l ←/→ page • q quit</pre><div class="extext"><p>paginating a long slice</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">paginator_pages</span></div></div>
+<div class="mix ftext" data-mod="collections" data-name="table_interactive" data-fns="table.Model table.Column table.Row table.New table.WithColumns table.WithRows table.WithFocused table.WithHeight table.DefaultStyles tea.Cmd tea.Msg tea.Model tea.KeyPressMsg table.Focused table.Blur table.Focus table.SelectedRow tea.Quit table.Update tea.View tea.NewView table.View tea.NewProgram lipgloss.NewStyle lipgloss.BorderStyle lipgloss.NormalBorder lipgloss.BorderForeground lipgloss.Color lipgloss.BorderBottom lipgloss.Bold lipgloss.Foreground lipgloss.Background table.SetStyles lipgloss.Render tea.Run"><a href="examples/table_interactive.html" title="bubbles/table is a scrollable table with a cursor (compare with the static lipgloss/table). Define Columns (title + width) and Rows ([]string), focus it, forward messages, read SelectedRow()."><pre class="term thumb"><span style="color:#585858">┌────────────────────────────────────────────┐</span>
+<span style="color:#585858">│</span> <span style="font-weight:bold">Rank</span>  <span style="font-weight:bold">City        </span>  <span style="font-weight:bold">Country   </span>  <span style="font-weight:bold">Population</span> <span style="color:#585858">│</span>
+<span style="color:#585858">│</span><span style="color:#585858">──────</span><span style="color:#585858">──────────────</span><span style="color:#585858">────────────</span><span style="color:#585858">────────────</span><span style="color:#585858">│</span>
+<span style="color:#585858">│</span>                                            <span style="color:#585858">│</span>
+<span style="color:#585858">└────────────────────────────────────────────┘</span>
+  Shanghai has 28,516,904 people</pre><div class="extext"><p>interactive table</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">table_interactive</span></div></div>
+<div class="mix ftext" data-mod="collections" data-name="list_custom_delegate" data-fns="tea.Msg list.Model tea.Cmd tea.KeyPressMsg list.Item list.New tea.Model tea.WindowSizeMsg list.SetWidth list.Update tea.View tea.NewView list.View tea.NewProgram lipgloss.NewStyle lipgloss.PaddingLeft lipgloss.Foreground lipgloss.Color lipgloss.Strikethrough lipgloss.Faint list.SelectedItem list.SetItem list.Index lipgloss.Render list.SetShowStatusBar list.SetFilteringEnabled tea.Run"><a href="examples/list_custom_delegate.html" title="An ItemDelegate decides how ONE item is drawn (Render), how tall it is (Height), the gap between items (Spacing) and item-level keys (Update). Here: a compact one-line &quot;todo&quot; list where space toggles done."><pre class="term thumb">
+  <span style="background:#5f5fd7"> </span><span style="color:#ffffd7;background:#5f5fd7">Today</span><span style="background:#5f5fd7"> </span>                            
+                                     
+    [x] <span style="opacity:.55;text-decoration:line-through">B</span><span style="opacity:.55;text-decoration:line-through">u</span><span style="opacity:.55;text-decoration:line-through">y</span><span style="text-decoration:line-through"> </span><span style="opacity:.55;text-decoration:line-through">c</span><span style="opacity:.55;text-decoration:line-through">o</span><span style="opacity:.55;text-decoration:line-through">f</span><span style="opacity:.55;text-decoration:line-through">f</span><span style="opacity:.55;text-decoration:line-through">e</span><span style="opacity:.55;text-decoration:line-through">e</span><span style="text-decoration:line-through"> </span><span style="opacity:.55;text-decoration:line-through">b</span><span style="opacity:.55;text-decoration:line-through">e</span><span style="opacity:.55;text-decoration:line-through">a</span><span style="opacity:.55;text-decoration:line-through">n</span><span style="opacity:.55;text-decoration:line-through">s</span>             
+    [x] <span style="opacity:.55;text-decoration:line-through">W</span><span style="opacity:.55;text-decoration:line-through">a</span><span style="opacity:.55;text-decoration:line-through">t</span><span style="opacity:.55;text-decoration:line-through">e</span><span style="opacity:.55;text-decoration:line-through">r</span><span style="text-decoration:line-through"> </span><span style="opacity:.55;text-decoration:line-through">t</span><span style="opacity:.55;text-decoration:line-through">h</span><span style="opacity:.55;text-decoration:line-through">e</span><span style="text-decoration:line-through"> </span><span style="opacity:.55;text-decoration:line-through">p</span><span style="opacity:.55;text-decoration:line-through">l</span><span style="opacity:.55;text-decoration:line-through">a</span><span style="opacity:.55;text-decoration:line-through">n</span><span style="opacity:.55;text-decoration:line-through">t</span><span style="opacity:.55;text-decoration:line-through">s</span>             
+  <span style="color:#ff5f87">&gt; [ ] Reply to emails</span>              
+    [ ] Book dentist appointment     
+    [x] <span style="opacity:.55;text-decoration:line-through">R</span><span style="opacity:.55;text-decoration:line-through">e</span><span style="opacity:.55;text-decoration:line-through">a</span><span style="opacity:.55;text-decoration:line-through">d</span><span style="text-decoration:line-through"> </span><span style="opacity:.55;text-decoration:line-through">o</span><span style="opacity:.55;text-decoration:line-through">n</span><span style="opacity:.55;text-decoration:line-through">e</span><span style="text-decoration:line-through"> </span><span style="opacity:.55;text-decoration:line-through">c</span><span style="opacity:.55;text-decoration:line-through">h</span><span style="opacity:.55;text-decoration:line-through">a</span><span style="opacity:.55;text-decoration:line-through">p</span><span style="opacity:.55;text-decoration:line-through">t</span><span style="opacity:.55;text-decoration:line-through">e</span><span style="opacity:.55;text-decoration:line-through">r</span>             
+                                     
+                                     
+                                     
+                                     
+  <span style="color:#626262">↑/k</span> <span style="color:#4a4a4a">up</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">↓/j</span> <span style="color:#4a4a4a">down</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">q</span> <span style="color:#4a4a4a">quit</span><span style="color:#3c3c3c"> • </span><span style="color:#626262">?</span> <span style="color:#4a4a4a">more</span></pre><div class="extext"><p>list with a custom ItemDelegate</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐⭐☆</span> <span class="exname">list_custom_delegate</span></div></div>
+<div class="mix fmodels" data-mod="navigation" data-name="key_help" data-fns="key.Binding key.NewBinding key.WithKeys key.WithHelp help.Model help.New tea.Cmd tea.Msg tea.Model tea.WindowSizeMsg help.SetWidth tea.KeyPressMsg key.Matches help.ShowAll tea.Quit tea.View tea.NewView help.View tea.NewProgram tea.Run"><a href="examples/key_help.html" title="key.Binding describes a key ONCE: which keys trigger it and its help text. key.Matches tests a key press against it. help.Model renders the bindings from any type with ShortHelp() and FullHelp() methods."><pre class="term thumb">position: (2, 1)   last key: &quot;?&quot;
+
+<span style="color:#626262">↑/k</span> <span style="color:#4a4a4a">move up</span>   <span style="color:#3c3c3c">    </span><span style="color:#626262">?</span> <span style="color:#4a4a4a">toggle help</span>
+<span style="color:#626262">↓/j</span> <span style="color:#4a4a4a">move down</span> <span style="color:#3c3c3c">    </span><span style="color:#626262">q</span> <span style="color:#4a4a4a">quit</span>       
+<span style="color:#626262">←/h</span> <span style="color:#4a4a4a">move left</span>                  
+<span style="color:#626262">→/l</span> <span style="color:#4a4a4a">move right</span>                 </pre><div class="extext"><p>key bindings and the help view</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">key_help</span></div></div>
+<div class="mix fmodels" data-mod="navigation" data-name="viewport_pager" data-fns="viewport.Model tea.Cmd tea.Msg tea.Model tea.KeyPressMsg tea.Quit tea.WindowSizeMsg viewport.New viewport.WithWidth viewport.WithHeight tea.View tea.NewView tea.MouseModeCellMotion tea.NewProgram lipgloss.NewStyle lipgloss.Bold lipgloss.Padding lipgloss.Background lipgloss.Color lipgloss.Foreground lipgloss.Render viewport.ScrollPercent viewport.Height viewport.SetContent viewport.SetWidth viewport.SetHeight viewport.Update viewport.View tea.Run"><a href="examples/viewport_pager.html" title="viewport shows a window into content taller than the screen and handles scrolling keys and the mouse wheel. Its height must be the terminal height MINUS whatever you draw around it (header/footer)."><pre class="term thumb"><span style="background:#7d56f4"> </span><span style="color:#ffffff;background:#7d56f4;font-weight:bold">fox.txt</span><span style="background:#7d56f4"> </span>
+  4  The quick brown fox jumps over the lazy dog.                               
+  5  The quick brown fox jumps over the lazy dog.                               
+  6  The quick brown fox jumps over the lazy dog.                               
+  7  The quick brown fox jumps over the lazy dog.                               
+  8  The quick brown fox jumps over the lazy dog.                               
+  9  The quick brown fox jumps over the lazy dog.                               
+ 10  The quick brown fox jumps over the lazy dog.                               
+ 11  The quick brown fox jumps over the lazy dog.                               
+ 12  The quick brown fox jumps over the lazy dog.                               
+ 13  The quick brown fox jumps over the lazy dog.                               
+ 14  The quick brown fox jumps over the lazy dog.                               
+ 15  The quick brown fox jumps over the lazy dog.                               
+ 16  The quick brown fox jumps over the lazy dog.                               
+ 17  The quick brown fox jumps over the lazy dog.                               
+ 18  The quick brown fox jumps over the lazy dog.                               
+ 19  The quick brown fox jumps over the lazy dog.                               
+ 20  The quick brown fox jumps over the lazy dog.                               
+ 21  The quick brown fox jumps over the lazy dog.                               
+ 22  The quick brown fox jumps over the lazy dog.                               
+ 23  The quick brown fox jumps over the lazy dog.                               
+ 24  The quick brown fox jumps over the lazy dog.                               
+ 25  The quick brown fox jumps over the lazy dog.                               
+<span style="color:#7d56f4">  3%</span></pre><div class="extext"><p>viewport pager with header and footer</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">viewport_pager</span></div></div>
+<div class="mix faudio" data-mod="feedback" data-name="spinner_basic" data-fns="tea.Cmd tea.Msg spinner.Spinner spinner.Dot spinner.Line spinner.MiniDot spinner.Jump spinner.Pulse spinner.Points spinner.Globe spinner.Moon spinner.Monkey spinner.Model spinner.New spinner.WithSpinner spinner.WithStyle tea.Batch spinner.Tick tea.Model spinner.TickMsg spinner.Update tea.KeyPressMsg tea.Quit tea.View tea.NewView spinner.View tea.NewProgram lipgloss.NewStyle lipgloss.Foreground lipgloss.Color tea.Run"><a href="examples/spinner_basic.html" title="A spinner animates by sending itself spinner.TickMsg. Start it from Init with m.spinner.Tick and keep forwarding TickMsg to its Update. tea.Batch starts the spinner AND the real work at the same time."><pre class="term thumb"><span style="color:#ff5faf">⢿ </span> Downloading assets...
+
+s change spinner • q quit</pre><div class="extext"><p>spinner while work runs in the background</p></div></a><div class="cardlabel"><span class="difficulty">⭐☆☆☆</span> <span class="exname">spinner_basic</span></div></div>
+<div class="mix faudio" data-mod="feedback" data-name="progress_bar" data-fns="tea.Cmd tea.Tick tea.Msg progress.Model progress.New progress.WithDefaultBlend progress.WithWidth tea.Model tea.KeyPressMsg tea.Quit tea.WindowSizeMsg tea.Batch progress.FrameMsg tea.View tea.NewView tea.NewProgram progress.SetWidth progress.Percent progress.IncrPercent progress.Update progress.View tea.Run"><a href="examples/progress_bar.html" title="progress.SetPercent returns a Cmd that animates the bar (spring physics) by sending progress.FrameMsg. You must forward FrameMsg to the bar&#x27;s Update, or the animation freezes. Progress itself comes from a tea.Tick loop here."><pre class="term thumb">
+  Installing packages...
+
+  <span style="color:#5a56e0;background:#5c56e1">▌</span><span style="color:#5e56e1;background:#5f57e1">▌</span><span style="color:#6157e1;background:#6357e1">▌</span><span style="color:#6557e2;background:#6657e2">▌</span><span style="color:#6858e2;background:#6a58e2">▌</span><span style="color:#6c58e3;background:#6d58e3">▌</span><span style="color:#6f59e3;background:#7059e3">▌</span><span style="color:#7259e3;background:#7459e4">▌</span><span style="color:#755ae4;background:#775ae4">▌</span><span style="color:#785ae4;background:#7a5ae5">▌</span><span style="color:#7b5ae5;background:#7d5be5">▌</span><span style="color:#7e5be5;background:#805be5">▌</span><span style="color:#815be6;background:#835ce6">▌</span><span style="color:#845ce6;background:#865ce6">▌</span><span style="color:#875ce7;background:#895de7">▌</span><span style="color:#8a5de7;background:#8c5de7">▌</span><span style="color:#8d5de7;background:#8e5de8">▌</span><span style="color:#905ee8;background:#915ee8">▌</span><span style="color:#935ee8;background:#945ee9">▌</span><span style="color:#955fe9;background:#975fe9">▌</span><span style="color:#985fe9;background:#995fe9">▌</span><span style="color:#9b60ea;background:#9c60ea">▌</span><span style="color:#9d60ea;background:#9f60ea">▌</span><span style="color:#a060eb;background:#a161eb">▌</span><span style="color:#a361eb;background:#a461eb">▌</span><span style="color:#a561eb;background:#a762ec">▌</span><span style="color:#a862ec;background:#a962ec">▌</span><span style="color:#ab62ec;background:#ac63ed">▌</span><span style="color:#ad63ed;background:#af63ed">▌</span><span style="color:#b063ed;background:#b163ed">▌</span><span style="color:#b264ee;background:#b464ee">▌</span><span style="color:#b564ee;background:#b664ee">▌</span><span style="color:#b765ef;background:#b965ef">▌</span><span style="color:#ba65ef;background:#bb65ef">▌</span><span style="color:#bc66ef;background:#be66f0">▌</span><span style="color:#bf66f0;background:#c066f0">▌</span><span style="color:#c166f0;background:#c367f1">▌</span><span style="color:#c467f1;background:#c567f1">▌</span><span style="color:#c667f1;background:#c868f1">▌</span><span style="color:#c968f2;background:#ca68f2">▌</span><span style="color:#cb68f2;background:#cd69f2">▌</span><span style="color:#ce69f3;background:#cf69f3">▌</span><span style="color:#d069f3;background:#d269f3">▌</span><span style="color:#606060">░░░░░░░░░░░░</span>  79%
+
+  q quit</pre><div class="extext"><p>animated progress bar</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">progress_bar</span></div></div>
+<div class="mix faudio" data-mod="feedback" data-name="timer_stopwatch" data-fns="timer.Model stopwatch.Model timer.New timer.WithInterval stopwatch.New stopwatch.WithInterval tea.Cmd tea.Batch timer.Init stopwatch.Init tea.Msg tea.Model timer.TimeoutMsg tea.KeyPressMsg timer.Toggle stopwatch.Toggle stopwatch.Reset tea.Quit timer.Update stopwatch.Update tea.View timer.View stopwatch.View tea.NewView tea.NewProgram lipgloss.NewStyle lipgloss.Border lipgloss.RoundedBorder lipgloss.Padding lipgloss.Width lipgloss.JoinHorizontal lipgloss.Render tea.Run"><a href="examples/timer_stopwatch.html" title="timer counts down and sends timer.TimeoutMsg at zero; stopwatch counts up. Both tick through their own TickMsg; each message carries an ID, so forwarding a msg to BOTH components is safe: the wrong one ignores it."><pre class="term thumb">╭────────────────────╮╭────────────────────╮
+│  timer             ││  stopwatch         │
+│  28.9s             ││  900ms             │
+╰────────────────────╯╰────────────────────╯
+ space start/stop • r reset stopwatch • q quit</pre><div class="extext"><p>timer and stopwatch side by side</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">timer_stopwatch</span></div></div>
+<div class="mix fshaders" data-mod="lgx" data-name="lipgloss_tree_list" data-fns="lipgloss/list.New lipgloss/list.Dash lipgloss/list.Roman lipgloss/tree.Root lipgloss/tree.RoundedEnumerator lipgloss.NewStyle lipgloss.Foreground lipgloss.Color lipgloss.MarginRight lipgloss/list.Enumerator lipgloss/tree.Enumerator lipgloss/list.EnumeratorStyle lipgloss/tree.EnumeratorStyle lipgloss.Println lipgloss.Bold lipgloss/tree.Child lipgloss/tree.RootStyle"><a href="examples/lipgloss_tree_list.html" title="list and tree render nested structures with enumerators (bullets, numbers, roman numerals, tree branches). Lists can contain lists."><pre class="term thumb">  <span style="color:#ff5f87">I.</span> Fruit
+  - Apples
+  - Oranges
+ <span style="color:#ff5f87">II.</span> Bread
+<span style="color:#ff5f87">III.</span> Coffee
+
+<span style="color:#5fafff;font-weight:bold">my-app</span>
+<span style="color:#6c6c6c">├──</span>go.mod
+<span style="color:#6c6c6c">├──</span>main.go
+<span style="color:#6c6c6c">├──</span>ui
+│   <span style="color:#6c6c6c">├──</span>model.go
+│   <span style="color:#6c6c6c">├──</span>update.go
+│   <span style="color:#6c6c6c">╰──</span>view.go
+<span style="color:#6c6c6c">╰──</span>store
+    <span style="color:#6c6c6c">╰──</span>sqlite.go</pre><div class="extext"><p>lists and trees (lipgloss/list, lipgloss/tree)</p></div></a><div class="cardlabel"><span class="difficulty">⭐☆☆☆</span> <span class="exname">lipgloss_tree_list</span></div></div>
+<div class="mix fshaders" data-mod="lgx" data-name="lipgloss_table" data-fns="lipgloss/table.New lipgloss/table.HeaderRow lipgloss.Color lipgloss.NewStyle lipgloss.Foreground lipgloss.Bold lipgloss.Align lipgloss.Padding lipgloss/table.Border lipgloss.NormalBorder lipgloss/table.BorderStyle lipgloss/table.Headers lipgloss/table.Row lipgloss/table.StyleFunc lipgloss.Println"><a href="examples/lipgloss_table.html" title="lipgloss/table renders a table to a string. It is NOT interactive (for a scrollable, selectable table see bubbles/table). StyleFunc lets you style each cell based on its row and column."><pre class="term thumb"><span style="color:#7d56f4">┌</span><span style="color:#7d56f4">────────────</span><span style="color:#7d56f4">┬</span><span style="color:#7d56f4">─────────────────────</span><span style="color:#7d56f4">┬</span><span style="color:#7d56f4">─────────────────</span><span style="color:#7d56f4">┐</span>
+<span style="color:#7d56f4">│</span>  <span style="color:#7d56f4;font-weight:bold">LANGUAGE</span>  <span style="color:#7d56f4">│</span>       <span style="color:#7d56f4;font-weight:bold">FORMAL</span>        <span style="color:#7d56f4">│</span>    <span style="color:#7d56f4;font-weight:bold">INFORMAL</span>     <span style="color:#7d56f4">│</span>
+<span style="color:#7d56f4">├</span><span style="color:#7d56f4">────────────</span><span style="color:#7d56f4">┼</span><span style="color:#7d56f4">─────────────────────</span><span style="color:#7d56f4">┼</span><span style="color:#7d56f4">─────────────────</span><span style="color:#7d56f4">┤</span>
+<span style="color:#7d56f4">│</span> <span style="color:#9e9e9e">Portuguese</span> <span style="color:#7d56f4">│</span> <span style="color:#9e9e9e">Olá, como está?</span>     <span style="color:#7d56f4">│</span> <span style="color:#9e9e9e">Oi, tudo bem?</span>   <span style="color:#7d56f4">│</span>
+<span style="color:#7d56f4">│</span> <span style="color:#d0d0d0">English</span>    <span style="color:#7d56f4">│</span> <span style="color:#d0d0d0">Hello, how are you?</span> <span style="color:#7d56f4">│</span> <span style="color:#d0d0d0">Hey, what&#x27;s up?</span> <span style="color:#7d56f4">│</span>
+<span style="color:#7d56f4">│</span> <span style="color:#9e9e9e">Spanish</span>    <span style="color:#7d56f4">│</span> <span style="color:#9e9e9e">Hola, ¿cómo está?</span>   <span style="color:#7d56f4">│</span> <span style="color:#9e9e9e">¿Qué tal?</span>       <span style="color:#7d56f4">│</span>
+<span style="color:#7d56f4">│</span> <span style="color:#d0d0d0">Japanese</span>   <span style="color:#7d56f4">│</span> <span style="color:#d0d0d0">こんにちは</span>          <span style="color:#7d56f4">│</span> <span style="color:#d0d0d0">やあ</span>            <span style="color:#7d56f4">│</span>
+<span style="color:#7d56f4">└</span><span style="color:#7d56f4">────────────</span><span style="color:#7d56f4">┴</span><span style="color:#7d56f4">─────────────────────</span><span style="color:#7d56f4">┴</span><span style="color:#7d56f4">─────────────────</span><span style="color:#7d56f4">┘</span></pre><div class="extext"><p>static table (lipgloss/table)</p></div></a><div class="cardlabel"><span class="difficulty">⭐⭐☆☆</span> <span class="exname">lipgloss_table</span></div></div></div>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script src="common/examples.js"></script>
+</body>
+</html>

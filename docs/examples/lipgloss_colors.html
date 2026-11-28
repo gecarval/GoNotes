@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - lipgloss colors</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example shapes">
+<div class="exnav"><a href="lipgloss_styles.html">← lipgloss_styles</a><a href="../examples.html">all examples</a><a href="lipgloss_join.html">lipgloss_join →</a></div>
+<h1><span class="lib">Lip Gloss</span> · colors, gradients and light/dark themes <span class="difficulty">⭐⭐☆☆</span></h1>
+<p class="exdesc">lipgloss.Color accepts hex (&quot;#FF5F87&quot;) or ANSI-256 numbers (&quot;205&quot;). Blend1D builds a gradient between color stops. HasDarkBackground asks the terminal its background, and LightDark picks the right variant.</p>
+
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full"><span style="color:#eeeeee">this text adapts to light/dark terminals</span>
+<span style="background:#000000">  </span><span style="background:#cd3131">  </span><span style="background:#0dbc79">  </span><span style="background:#e5e510">  </span><span style="background:#2472c8">  </span><span style="background:#bc3fbc">  </span><span style="background:#11a8cd">  </span><span style="background:#e5e5e5">  </span><span style="background:#666666">  </span><span style="background:#f14c4c">  </span><span style="background:#23d18b">  </span><span style="background:#f5f543">  </span><span style="background:#3b8eea">  </span><span style="background:#d670d6">  </span><span style="background:#29b8db">  </span><span style="background:#ffffff">  </span>
+<span style="background:#ff5f87"> </span><span style="background:#ff6586"> </span><span style="background:#ff6c84"> </span><span style="background:#ff7283"> </span><span style="background:#ff7882"> </span><span style="background:#ff7e80"> </span><span style="background:#ff837f"> </span><span style="background:#ff897d"> </span><span style="background:#ff8e7c"> </span><span style="background:#ff937a"> </span><span style="background:#ff9879"> </span><span style="background:#ff9e77"> </span><span style="background:#ffa376"> </span><span style="background:#ffa874"> </span><span style="background:#ffad72"> </span><span style="background:#ffb170"> </span><span style="background:#ffb66e"> </span><span style="background:#ffbb6c"> </span><span style="background:#ffc06a"> </span><span style="background:#ffc568"> </span><span style="background:#ffc966"> </span><span style="background:#ffce64"> </span><span style="background:#ffd361"> </span><span style="background:#ffd75f"> </span><span style="background:#ffd75f"> </span><span style="background:#fcd567"> </span><span style="background:#f7d370"> </span><span style="background:#f3d277"> </span><span style="background:#efd07f"> </span><span style="background:#eace87"> </span><span style="background:#e6cc8e"> </span><span style="background:#e1ca95"> </span><span style="background:#dcc89c"> </span><span style="background:#d7c6a3"> </span><span style="background:#d2c5aa"> </span><span style="background:#ccc3b0"> </span><span style="background:#c6c1b7"> </span><span style="background:#c0bfbe"> </span><span style="background:#b9bec5"> </span><span style="background:#b3bccb"> </span><span style="background:#abbad2"> </span><span style="background:#a3b9d8"> </span><span style="background:#9bb7df"> </span><span style="background:#92b5e5"> </span><span style="background:#87b4ec"> </span><span style="background:#7cb2f2"> </span><span style="background:#6fb1f9"> </span><span style="background:#5fafff"> </span>
+<span style="background:#4b3392">  </span><span style="background:#4b3392"> </span><span style="background:#4b3392">  </span><span style="background:#7d56f4">  </span><span style="background:#7d56f4"> </span><span style="background:#7d56f4">  </span><span style="background:#e3bcff">  </span><span style="background:#e3bcff"> </span><span style="background:#e3bcff">  </span><span style="background:#cdf456">  </span><span style="background:#cdf456"> </span><span style="background:#cdf456">  </span>   darken • base • lighten • complementary</pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-HasDarkBackground">lipgloss.HasDarkBackground</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-LightDark">lipgloss.LightDark</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Color">lipgloss.Color</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Println">lipgloss.Println</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-NewStyle">lipgloss.NewStyle</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Foreground">lipgloss.Foreground</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Render">lipgloss.Render</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Background">lipgloss.Background</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Blend1D">lipgloss.Blend1D</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Padding">lipgloss.Padding</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-JoinHorizontal">lipgloss.JoinHorizontal</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Darken">lipgloss.Darken</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Lighten">lipgloss.Lighten</a> <a class="chip shapes" href="../cheatsheet.html#fn-lipgloss-Complementary">lipgloss.Complementary</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir lipgloss_colors &amp;&amp; cd lipgloss_colors
+go mod init lipgloss_colors
+# save the code below as main.go, then:
+go get charm.land/lipgloss/v2@v2.0.6
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48</pre><pre class="code"><code><span class="c">// Lip Gloss example - colors, gradients and light/dark themes</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★★☆☆] 2/4</span>
+<span class="c">//</span>
+<span class="c">// lipgloss.Color accepts hex (&quot;#FF5F87&quot;) or ANSI-256 numbers (&quot;205&quot;).</span>
+<span class="c">// Blend1D builds a gradient between color stops. HasDarkBackground asks</span>
+<span class="c">// the terminal its background, and LightDark picks the right variant.</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;image/color&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+	<span class="s">&quot;strings&quot;</span>
+
+	<span class="s">&quot;charm.land/lipgloss/v2&quot;</span>
+)
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="c">// Pick colors that work on the user&#x27;s background.</span>
+	isDark := lipgloss.<span class="f">HasDarkBackground</span>(os.<span class="t">Stdin</span>, os.<span class="t">Stdout</span>)
+	lightDark := lipgloss.<span class="f">LightDark</span>(isDark)
+	text := <span class="f">lightDark</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#333333&quot;</span>), lipgloss.<span class="f">Color</span>(<span class="s">&quot;#EEEEEE&quot;</span>))
+	lipgloss.<span class="f">Println</span>(lipgloss.<span class="f">NewStyle</span>().<span class="f">Foreground</span>(text).<span class="f">Render</span>(<span class="s">&quot;this text adapts to light/dark terminals&quot;</span>))
+
+	<span class="c">// The 16 basic ANSI colors are constants.</span>
+	<span class="k">var</span> basic strings.<span class="t">Builder</span>
+	<span class="k">for</span> c := lipgloss.<span class="t">Black</span>; c &lt;= lipgloss.<span class="t">BrightWhite</span>; c++ {
+		basic.<span class="f">WriteString</span>(lipgloss.<span class="f">NewStyle</span>().<span class="f">Background</span>(c).<span class="f">Render</span>(<span class="s">&quot;  &quot;</span>))
+	}
+	lipgloss.<span class="f">Println</span>(basic.<span class="f">String</span>())
+
+	<span class="c">// A 48-step gradient between three stops.</span>
+	<span class="k">var</span> grad strings.<span class="t">Builder</span>
+	<span class="k">for</span> _, c := <span class="k">range</span> lipgloss.<span class="f">Blend1D</span>(<span class="n">48</span>, lipgloss.<span class="f">Color</span>(<span class="s">&quot;#FF5F87&quot;</span>), lipgloss.<span class="f">Color</span>(<span class="s">&quot;#FFD75F&quot;</span>), lipgloss.<span class="f">Color</span>(<span class="s">&quot;#5FAFFF&quot;</span>)) {
+		grad.<span class="f">WriteString</span>(lipgloss.<span class="f">NewStyle</span>().<span class="f">Background</span>(c).<span class="f">Render</span>(<span class="s">&quot; &quot;</span>))
+	}
+	lipgloss.<span class="f">Println</span>(grad.<span class="f">String</span>())
+
+	<span class="c">// Helpers derive new colors from existing ones.</span>
+	base := lipgloss.<span class="f">Color</span>(<span class="s">&quot;#7D56F4&quot;</span>)
+	swatch := <span class="k">func</span>(c color.<span class="t">Color</span>) <span class="b">string</span> {
+		<span class="k">return</span> lipgloss.<span class="f">NewStyle</span>().<span class="f">Background</span>(c).<span class="f">Padding</span>(<span class="n">0</span>, <span class="n">2</span>).<span class="f">Render</span>(<span class="s">&quot; &quot;</span>)
+	}
+	lipgloss.<span class="f">Println</span>(lipgloss.<span class="f">JoinHorizontal</span>(lipgloss.<span class="t">Top</span>,
+		<span class="f">swatch</span>(lipgloss.<span class="f">Darken</span>(base, <span class="n">0.4</span>)), <span class="f">swatch</span>(base),
+		<span class="f">swatch</span>(lipgloss.<span class="f">Lighten</span>(base, <span class="n">0.4</span>)), <span class="f">swatch</span>(lipgloss.<span class="f">Complementary</span>(base)),
+	), <span class="s">&quot;  darken • base • lighten • complementary&quot;</span>)
+}</code></pre></div>
+<div class="exnav"><a href="lipgloss_styles.html">← lipgloss_styles</a><a href="../examples.html">all examples</a><a href="lipgloss_join.html">lipgloss_join →</a></div>
+<script type="text/plain" id="rawsrc">// Lip Gloss example - colors, gradients and light/dark themes
+//
+// Example complexity rating: [★★☆☆] 2/4
+//
+// lipgloss.Color accepts hex ("#FF5F87") or ANSI-256 numbers ("205").
+// Blend1D builds a gradient between color stops. HasDarkBackground asks
+// the terminal its background, and LightDark picks the right variant.
+package main
+
+import (
+	"image/color"
+	"os"
+	"strings"
+
+	"charm.land/lipgloss/v2"
+)
+
+func main() {
+	// Pick colors that work on the user's background.
+	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	lightDark := lipgloss.LightDark(isDark)
+	text := lightDark(lipgloss.Color("#333333"), lipgloss.Color("#EEEEEE"))
+	lipgloss.Println(lipgloss.NewStyle().Foreground(text).Render("this text adapts to light/dark terminals"))
+
+	// The 16 basic ANSI colors are constants.
+	var basic strings.Builder
+	for c := lipgloss.Black; c <= lipgloss.BrightWhite; c++ {
+		basic.WriteString(lipgloss.NewStyle().Background(c).Render("  "))
+	}
+	lipgloss.Println(basic.String())
+
+	// A 48-step gradient between three stops.
+	var grad strings.Builder
+	for _, c := range lipgloss.Blend1D(48, lipgloss.Color("#FF5F87"), lipgloss.Color("#FFD75F"), lipgloss.Color("#5FAFFF")) {
+		grad.WriteString(lipgloss.NewStyle().Background(c).Render(" "))
+	}
+	lipgloss.Println(grad.String())
+
+	// Helpers derive new colors from existing ones.
+	base := lipgloss.Color("#7D56F4")
+	swatch := func(c color.Color) string {
+		return lipgloss.NewStyle().Background(c).Padding(0, 2).Render(" ")
+	}
+	lipgloss.Println(lipgloss.JoinHorizontal(lipgloss.Top,
+		swatch(lipgloss.Darken(base, 0.4)), swatch(base),
+		swatch(lipgloss.Lighten(base, 0.4)), swatch(lipgloss.Complementary(base)),
+	), "  darken • base • lighten • complementary")
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

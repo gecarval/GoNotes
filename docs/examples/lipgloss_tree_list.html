@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - lipgloss tree list</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example shaders">
+<div class="exnav"><a href="timer_stopwatch.html">← timer_stopwatch</a><a href="../examples.html">all examples</a><a href="lipgloss_table.html">lipgloss_table →</a></div>
+<h1><span class="lib">Lip Gloss</span> · lists and trees (lipgloss/list, lipgloss/tree) <span class="difficulty">⭐☆☆☆</span></h1>
+<p class="exdesc">list and tree render nested structures with enumerators (bullets, numbers, roman numerals, tree branches). Lists can contain lists.</p>
+
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full">  <span style="color:#ff5f87">I.</span> Fruit
+  - Apples
+  - Oranges
+ <span style="color:#ff5f87">II.</span> Bread
+<span style="color:#ff5f87">III.</span> Coffee
+
+<span style="color:#5fafff;font-weight:bold">my-app</span>
+<span style="color:#6c6c6c">├──</span>go.mod
+<span style="color:#6c6c6c">├──</span>main.go
+<span style="color:#6c6c6c">├──</span>ui
+│   <span style="color:#6c6c6c">├──</span>model.go
+│   <span style="color:#6c6c6c">├──</span>update.go
+│   <span style="color:#6c6c6c">╰──</span>view.go
+<span style="color:#6c6c6c">╰──</span>store
+    <span style="color:#6c6c6c">╰──</span>sqlite.go</pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-list-New">lipgloss/list.New</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-list-Dash">lipgloss/list.Dash</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-list-Roman">lipgloss/list.Roman</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-tree-Root">lipgloss/tree.Root</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-tree-RoundedEnumerator">lipgloss/tree.RoundedEnumerator</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-NewStyle">lipgloss.NewStyle</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-Foreground">lipgloss.Foreground</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-Color">lipgloss.Color</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-MarginRight">lipgloss.MarginRight</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-list-Enumerator">lipgloss/list.Enumerator</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-tree-Enumerator">lipgloss/tree.Enumerator</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-list-EnumeratorStyle">lipgloss/list.EnumeratorStyle</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-tree-EnumeratorStyle">lipgloss/tree.EnumeratorStyle</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-Println">lipgloss.Println</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-Bold">lipgloss.Bold</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-tree-Child">lipgloss/tree.Child</a> <a class="chip shaders" href="../cheatsheet.html#fn-lipgloss-tree-RootStyle">lipgloss/tree.RootStyle</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir lipgloss_tree_list &amp;&amp; cd lipgloss_tree_list
+go mod init lipgloss_tree_list
+# save the code below as main.go, then:
+go get charm.land/lipgloss/v2@v2.0.6
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41</pre><pre class="code"><code><span class="c">// Lip Gloss example - lists and trees (lipgloss/list, lipgloss/tree)</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★☆☆☆] 1/4</span>
+<span class="c">//</span>
+<span class="c">// list and tree render nested structures with enumerators (bullets,</span>
+<span class="c">// numbers, roman numerals, tree branches). Lists can contain lists.</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;charm.land/lipgloss/v2&quot;</span>
+	<span class="s">&quot;charm.land/lipgloss/v2/list&quot;</span>
+	<span class="s">&quot;charm.land/lipgloss/v2/tree&quot;</span>
+)
+
+<span class="k">func</span> <span class="f">main</span>() {
+	enum := lipgloss.<span class="f">NewStyle</span>().<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#FF5F87&quot;</span>)).<span class="f">MarginRight</span>(<span class="n">1</span>)
+
+	groceries := list.<span class="f">New</span>(
+		<span class="s">&quot;Fruit&quot;</span>,
+		list.<span class="f">New</span>(<span class="s">&quot;Apples&quot;</span>, <span class="s">&quot;Oranges&quot;</span>).<span class="f">Enumerator</span>(list.<span class="t">Dash</span>), <span class="c">// nested list</span>
+		<span class="s">&quot;Bread&quot;</span>,
+		<span class="s">&quot;Coffee&quot;</span>,
+	).<span class="f">Enumerator</span>(list.<span class="t">Roman</span>).<span class="f">EnumeratorStyle</span>(enum)
+
+	lipgloss.<span class="f">Println</span>(groceries)
+	lipgloss.<span class="f">Println</span>()
+
+	root := lipgloss.<span class="f">NewStyle</span>().<span class="f">Bold</span>(<span class="b">true</span>).<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#5FAFFF&quot;</span>))
+	project := tree.<span class="f">Root</span>(<span class="s">&quot;my-app&quot;</span>).
+		<span class="f">Child</span>(
+			<span class="s">&quot;go.mod&quot;</span>,
+			<span class="s">&quot;main.go&quot;</span>,
+			tree.<span class="f">Root</span>(<span class="s">&quot;ui&quot;</span>).<span class="f">Child</span>(<span class="s">&quot;model.go&quot;</span>, <span class="s">&quot;update.go&quot;</span>, <span class="s">&quot;view.go&quot;</span>),
+			tree.<span class="f">Root</span>(<span class="s">&quot;store&quot;</span>).<span class="f">Child</span>(<span class="s">&quot;sqlite.go&quot;</span>),
+		).
+		<span class="f">Enumerator</span>(tree.<span class="t">RoundedEnumerator</span>).
+		<span class="f">RootStyle</span>(root).
+		<span class="f">EnumeratorStyle</span>(lipgloss.<span class="f">NewStyle</span>().<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;#6C6C6C&quot;</span>)))
+
+	lipgloss.<span class="f">Println</span>(project)
+}</code></pre></div>
+<div class="exnav"><a href="timer_stopwatch.html">← timer_stopwatch</a><a href="../examples.html">all examples</a><a href="lipgloss_table.html">lipgloss_table →</a></div>
+<script type="text/plain" id="rawsrc">// Lip Gloss example - lists and trees (lipgloss/list, lipgloss/tree)
+//
+// Example complexity rating: [★☆☆☆] 1/4
+//
+// list and tree render nested structures with enumerators (bullets,
+// numbers, roman numerals, tree branches). Lists can contain lists.
+package main
+
+import (
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/list"
+	"charm.land/lipgloss/v2/tree"
+)
+
+func main() {
+	enum := lipgloss.NewStyle().Foreground(lipgloss.Color("#FF5F87")).MarginRight(1)
+
+	groceries := list.New(
+		"Fruit",
+		list.New("Apples", "Oranges").Enumerator(list.Dash), // nested list
+		"Bread",
+		"Coffee",
+	).Enumerator(list.Roman).EnumeratorStyle(enum)
+
+	lipgloss.Println(groceries)
+	lipgloss.Println()
+
+	root := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#5FAFFF"))
+	project := tree.Root("my-app").
+		Child(
+			"go.mod",
+			"main.go",
+			tree.Root("ui").Child("model.go", "update.go", "view.go"),
+			tree.Root("store").Child("sqlite.go"),
+		).
+		Enumerator(tree.RoundedEnumerator).
+		RootStyle(root).
+		EnumeratorStyle(lipgloss.NewStyle().Foreground(lipgloss.Color("#6C6C6C")))
+
+	lipgloss.Println(project)
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tui docs - table interactive</title>
+<link rel="stylesheet" href="../common/main.css">
+
+<script>
+if (localStorage.getItem('darkmode') === '1') document.documentElement.classList.add('darkmode');
+function toggleDarkMode() {
+  const on = document.documentElement.classList.toggle('darkmode');
+  localStorage.setItem('darkmode', on ? '1' : '0');
+}
+</script>
+</head>
+<body>
+<div class="header-container"><div class="header">
+  <a id="logo" href="../index.html" title="tui docs"><span>tui<br>docs</span></a>
+  <div class="nav-container">
+    <button class="btn-dark" onclick="toggleDarkMode()" title="for the tired programmers at night">◐ dark</button>
+    <div class="menu"><a href="../index.html">about</a><a id="active" href="../examples.html">examples</a><a href="../cheatsheet.html">cheatsheet</a><a href="https://pkg.go.dev/charm.land/bubbletea/v2" target="_blank">pkg.go.dev</a><a href="https://github.com/charmbracelet" target="_blank">github</a></div>
+  </div>
+</div></div>
+<div class="page">
+<div class="content example text">
+<div class="exnav"><a href="paginator_pages.html">← paginator_pages</a><a href="../examples.html">all examples</a><a href="list_custom_delegate.html">list_custom_delegate →</a></div>
+<h1><span class="lib">Bubbles</span> · interactive table <span class="difficulty">⭐⭐☆☆</span></h1>
+<p class="exdesc">bubbles/table is a scrollable table with a cursor (compare with the static lipgloss/table). Define Columns (title + width) and Rows ([]string), focus it, forward messages, read SelectedRow().</p>
+<p class="keys">Keys: ↑/↓ move, enter select, esc toggle focus, q quit</p>
+<div class="screen"><div class="screenbar"><i></i><i></i><i></i><span>go run .  —  80×24</span></div><pre class="term full"><span style="color:#585858">┌────────────────────────────────────────────┐</span>
+<span style="color:#585858">│</span> <span style="font-weight:bold">Rank</span>  <span style="font-weight:bold">City        </span>  <span style="font-weight:bold">Country   </span>  <span style="font-weight:bold">Population</span> <span style="color:#585858">│</span>
+<span style="color:#585858">│</span><span style="color:#585858">──────</span><span style="color:#585858">──────────────</span><span style="color:#585858">────────────</span><span style="color:#585858">────────────</span><span style="color:#585858">│</span>
+<span style="color:#585858">│</span>                                            <span style="color:#585858">│</span>
+<span style="color:#585858">└────────────────────────────────────────────┘</span>
+  Shanghai has 28,516,904 people</pre></div>
+<p class="usedlabel">Functions and types used (click to open in the cheatsheet):</p>
+<p class="chips"><span class="chip type">table.Model</span> <span class="chip type">table.Column</span> <span class="chip type">table.Row</span> <a class="chip text" href="../cheatsheet.html#fn-table-New">table.New</a> <a class="chip text" href="../cheatsheet.html#fn-table-WithColumns">table.WithColumns</a> <a class="chip text" href="../cheatsheet.html#fn-table-WithRows">table.WithRows</a> <a class="chip text" href="../cheatsheet.html#fn-table-WithFocused">table.WithFocused</a> <a class="chip text" href="../cheatsheet.html#fn-table-WithHeight">table.WithHeight</a> <a class="chip text" href="../cheatsheet.html#fn-table-DefaultStyles">table.DefaultStyles</a> <span class="chip type">tea.Cmd</span> <span class="chip type">tea.Msg</span> <span class="chip type">tea.Model</span> <span class="chip type">tea.KeyPressMsg</span> <a class="chip text" href="../cheatsheet.html#fn-table-Focused">table.Focused</a> <a class="chip text" href="../cheatsheet.html#fn-table-Blur">table.Blur</a> <a class="chip text" href="../cheatsheet.html#fn-table-Focus">table.Focus</a> <a class="chip text" href="../cheatsheet.html#fn-table-SelectedRow">table.SelectedRow</a> <a class="chip text" href="../cheatsheet.html#fn-tea-Quit">tea.Quit</a> <a class="chip text" href="../cheatsheet.html#fn-table-Update">table.Update</a> <span class="chip type">tea.View</span> <a class="chip text" href="../cheatsheet.html#fn-tea-NewView">tea.NewView</a> <a class="chip text" href="../cheatsheet.html#fn-table-View">table.View</a> <a class="chip text" href="../cheatsheet.html#fn-tea-NewProgram">tea.NewProgram</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-NewStyle">lipgloss.NewStyle</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-BorderStyle">lipgloss.BorderStyle</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-NormalBorder">lipgloss.NormalBorder</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-BorderForeground">lipgloss.BorderForeground</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-Color">lipgloss.Color</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-BorderBottom">lipgloss.BorderBottom</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-Bold">lipgloss.Bold</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-Foreground">lipgloss.Foreground</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-Background">lipgloss.Background</a> <a class="chip text" href="../cheatsheet.html#fn-table-SetStyles">table.SetStyles</a> <a class="chip text" href="../cheatsheet.html#fn-lipgloss-Render">lipgloss.Render</a> <a class="chip text" href="../cheatsheet.html#fn-tea-Run">tea.Run</a></p>
+<div class="exbuttons">
+  <button class="exdownbtn" id="copybtn">copy code</button>
+  <a class="exdownbtn" id="dlbtn" download="main.go">download main.go</a>
+</div>
+<p class="usedlabel">Run it:</p>
+<pre class="runbox">mkdir table_interactive &amp;&amp; cd table_interactive
+go mod init table_interactive
+# save the code below as main.go, then:
+go get charm.land/bubbletea/v2@v2.1.2 charm.land/lipgloss/v2@v2.0.6 charm.land/bubbles/v2@v2.2.2
+go run .</pre>
+<div class="codebox"><pre class="lines">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98</pre><pre class="code"><code><span class="c">// Bubbles example - interactive table</span>
+<span class="c">//</span>
+<span class="c">// Example complexity rating: [★★☆☆] 2/4</span>
+<span class="c">//</span>
+<span class="c">// bubbles/table is a scrollable table with a cursor (compare with the</span>
+<span class="c">// static lipgloss/table). Define Columns (title + width) and Rows</span>
+<span class="c">// ([]string), focus it, forward messages, read SelectedRow().</span>
+<span class="c">//</span>
+<span class="c">// Keys: ↑/↓ move, enter select, esc toggle focus, q quit</span>
+<span class="k">package</span> main
+
+<span class="k">import</span> (
+	<span class="s">&quot;fmt&quot;</span>
+	<span class="s">&quot;os&quot;</span>
+
+	<span class="s">&quot;charm.land/bubbles/v2/table&quot;</span>
+	tea <span class="s">&quot;charm.land/bubbletea/v2&quot;</span>
+	<span class="s">&quot;charm.land/lipgloss/v2&quot;</span>
+)
+
+<span class="k">var</span> baseStyle = lipgloss.<span class="f">NewStyle</span>().
+	<span class="f">BorderStyle</span>(lipgloss.<span class="f">NormalBorder</span>()).
+	<span class="f">BorderForeground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;240&quot;</span>))
+
+<span class="k">type</span> model <span class="k">struct</span> {
+	table  table.<span class="t">Model</span>
+	status <span class="b">string</span>
+}
+
+<span class="k">func</span> <span class="f">initialModel</span>() model {
+	columns := []table.<span class="t">Column</span>{
+		{Title: <span class="s">&quot;Rank&quot;</span>, Width: <span class="n">4</span>},
+		{Title: <span class="s">&quot;City&quot;</span>, Width: <span class="n">12</span>},
+		{Title: <span class="s">&quot;Country&quot;</span>, Width: <span class="n">10</span>},
+		{Title: <span class="s">&quot;Population&quot;</span>, Width: <span class="n">10</span>},
+	}
+	rows := []table.<span class="t">Row</span>{
+		{<span class="s">&quot;1&quot;</span>, <span class="s">&quot;Tokyo&quot;</span>, <span class="s">&quot;Japan&quot;</span>, <span class="s">&quot;37,274,000&quot;</span>},
+		{<span class="s">&quot;2&quot;</span>, <span class="s">&quot;Delhi&quot;</span>, <span class="s">&quot;India&quot;</span>, <span class="s">&quot;32,065,760&quot;</span>},
+		{<span class="s">&quot;3&quot;</span>, <span class="s">&quot;Shanghai&quot;</span>, <span class="s">&quot;China&quot;</span>, <span class="s">&quot;28,516,904&quot;</span>},
+		{<span class="s">&quot;4&quot;</span>, <span class="s">&quot;Dhaka&quot;</span>, <span class="s">&quot;Bangladesh&quot;</span>, <span class="s">&quot;22,478,116&quot;</span>},
+		{<span class="s">&quot;5&quot;</span>, <span class="s">&quot;São Paulo&quot;</span>, <span class="s">&quot;Brazil&quot;</span>, <span class="s">&quot;22,429,800&quot;</span>},
+		{<span class="s">&quot;6&quot;</span>, <span class="s">&quot;Mexico City&quot;</span>, <span class="s">&quot;Mexico&quot;</span>, <span class="s">&quot;22,085,140&quot;</span>},
+		{<span class="s">&quot;7&quot;</span>, <span class="s">&quot;Cairo&quot;</span>, <span class="s">&quot;Egypt&quot;</span>, <span class="s">&quot;21,750,020&quot;</span>},
+		{<span class="s">&quot;8&quot;</span>, <span class="s">&quot;Beijing&quot;</span>, <span class="s">&quot;China&quot;</span>, <span class="s">&quot;21,333,332&quot;</span>},
+		{<span class="s">&quot;9&quot;</span>, <span class="s">&quot;Mumbai&quot;</span>, <span class="s">&quot;India&quot;</span>, <span class="s">&quot;20,961,472&quot;</span>},
+		{<span class="s">&quot;10&quot;</span>, <span class="s">&quot;Osaka&quot;</span>, <span class="s">&quot;Japan&quot;</span>, <span class="s">&quot;19,059,856&quot;</span>},
+	}
+	t := table.<span class="f">New</span>(
+		table.<span class="f">WithColumns</span>(columns),
+		table.<span class="f">WithRows</span>(rows),
+		table.<span class="f">WithFocused</span>(<span class="b">true</span>),
+		table.<span class="f">WithHeight</span>(<span class="n">7</span>), <span class="c">// rows visible at once; the rest scrolls</span>
+	)
+
+	s := table.<span class="f">DefaultStyles</span>()
+	s.<span class="t">Header</span> = s.<span class="t">Header</span>.<span class="f">BorderStyle</span>(lipgloss.<span class="f">NormalBorder</span>()).
+		<span class="f">BorderForeground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;240&quot;</span>)).<span class="f">BorderBottom</span>(<span class="b">true</span>).<span class="f">Bold</span>(<span class="b">true</span>)
+	s.<span class="t">Selected</span> = s.<span class="t">Selected</span>.<span class="f">Foreground</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;229&quot;</span>)).
+		<span class="f">Background</span>(lipgloss.<span class="f">Color</span>(<span class="s">&quot;57&quot;</span>)).<span class="f">Bold</span>(<span class="b">false</span>)
+	t.<span class="f">SetStyles</span>(s)
+
+	<span class="k">return</span> model{table: t}
+}
+
+<span class="k">func</span> (m model) <span class="f">Init</span>() tea.<span class="t">Cmd</span> { <span class="k">return</span> <span class="b">nil</span> }
+
+<span class="k">func</span> (m model) <span class="f">Update</span>(msg tea.<span class="t">Msg</span>) (tea.<span class="t">Model</span>, tea.<span class="t">Cmd</span>) {
+	<span class="k">if</span> key, ok := msg.(tea.<span class="t">KeyPressMsg</span>); ok {
+		<span class="k">switch</span> key.<span class="f">String</span>() {
+		<span class="k">case</span> <span class="s">&quot;esc&quot;</span>:
+			<span class="k">if</span> m.table.<span class="f">Focused</span>() {
+				m.table.<span class="f">Blur</span>()
+			} <span class="k">else</span> {
+				m.table.<span class="f">Focus</span>()
+			}
+		<span class="k">case</span> <span class="s">&quot;enter&quot;</span>:
+			row := m.table.<span class="f">SelectedRow</span>()
+			m.status = fmt.<span class="f">Sprintf</span>(<span class="s">&quot;%s has %s people&quot;</span>, <span class="f">row</span>[<span class="n">1</span>], <span class="f">row</span>[<span class="n">3</span>])
+		<span class="k">case</span> <span class="s">&quot;q&quot;</span>, <span class="s">&quot;ctrl+c&quot;</span>:
+			<span class="k">return</span> m, tea.<span class="t">Quit</span>
+		}
+	}
+	<span class="k">var</span> cmd tea.<span class="t">Cmd</span>
+	m.table, cmd = m.table.<span class="f">Update</span>(msg)
+	<span class="k">return</span> m, cmd
+}
+
+<span class="k">func</span> (m model) <span class="f">View</span>() tea.<span class="t">View</span> {
+	<span class="k">return</span> tea.<span class="f">NewView</span>(baseStyle.<span class="f">Render</span>(m.table.<span class="f">View</span>()) + <span class="s">&quot;\n  &quot;</span> + m.status + <span class="s">&quot;\n&quot;</span>)
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+	<span class="k">if</span> _, err := tea.<span class="f">NewProgram</span>(<span class="f">initialModel</span>()).<span class="f">Run</span>(); err != <span class="b">nil</span> {
+		fmt.<span class="f">Println</span>(<span class="s">&quot;error:&quot;</span>, err)
+		os.<span class="f">Exit</span>(<span class="n">1</span>)
+	}
+}</code></pre></div>
+<div class="exnav"><a href="paginator_pages.html">← paginator_pages</a><a href="../examples.html">all examples</a><a href="list_custom_delegate.html">list_custom_delegate →</a></div>
+<script type="text/plain" id="rawsrc">// Bubbles example - interactive table
+//
+// Example complexity rating: [★★☆☆] 2/4
+//
+// bubbles/table is a scrollable table with a cursor (compare with the
+// static lipgloss/table). Define Columns (title + width) and Rows
+// ([]string), focus it, forward messages, read SelectedRow().
+//
+// Keys: ↑/↓ move, enter select, esc toggle focus, q quit
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"charm.land/bubbles/v2/table"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+)
+
+var baseStyle = lipgloss.NewStyle().
+	BorderStyle(lipgloss.NormalBorder()).
+	BorderForeground(lipgloss.Color("240"))
+
+type model struct {
+	table  table.Model
+	status string
+}
+
+func initialModel() model {
+	columns := []table.Column{
+		{Title: "Rank", Width: 4},
+		{Title: "City", Width: 12},
+		{Title: "Country", Width: 10},
+		{Title: "Population", Width: 10},
+	}
+	rows := []table.Row{
+		{"1", "Tokyo", "Japan", "37,274,000"},
+		{"2", "Delhi", "India", "32,065,760"},
+		{"3", "Shanghai", "China", "28,516,904"},
+		{"4", "Dhaka", "Bangladesh", "22,478,116"},
+		{"5", "São Paulo", "Brazil", "22,429,800"},
+		{"6", "Mexico City", "Mexico", "22,085,140"},
+		{"7", "Cairo", "Egypt", "21,750,020"},
+		{"8", "Beijing", "China", "21,333,332"},
+		{"9", "Mumbai", "India", "20,961,472"},
+		{"10", "Osaka", "Japan", "19,059,856"},
+	}
+	t := table.New(
+		table.WithColumns(columns),
+		table.WithRows(rows),
+		table.WithFocused(true),
+		table.WithHeight(7), // rows visible at once; the rest scrolls
+	)
+
+	s := table.DefaultStyles()
+	s.Header = s.Header.BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("240")).BorderBottom(true).Bold(true)
+	s.Selected = s.Selected.Foreground(lipgloss.Color("229")).
+		Background(lipgloss.Color("57")).Bold(false)
+	t.SetStyles(s)
+
+	return model{table: t}
+}
+
+func (m model) Init() tea.Cmd { return nil }
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	if key, ok := msg.(tea.KeyPressMsg); ok {
+		switch key.String() {
+		case "esc":
+			if m.table.Focused() {
+				m.table.Blur()
+			} else {
+				m.table.Focus()
+			}
+		case "enter":
+			row := m.table.SelectedRow()
+			m.status = fmt.Sprintf("%s has %s people", row[1], row[3])
+		case "q", "ctrl+c":
+			return m, tea.Quit
+		}
+	}
+	var cmd tea.Cmd
+	m.table, cmd = m.table.Update(msg)
+	return m, cmd
+}
+
+func (m model) View() tea.View {
+	return tea.NewView(baseStyle.Render(m.table.View()) + "\n  " + m.status + "\n")
+}
+
+func main() {
+	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
+		fmt.Println("error:", err)
+		os.Exit(1)
+	}
+}
+</script>
+</div>
+<div class="footer"><p>Bubble Tea v2.1.2 · Bubbles v2.2.2 · Lip Gloss v2.0.6 — unofficial quick reference built for GoNotes. APIs extracted with <code>go doc</code>; every example compiles. Libraries © Charmbracelet, MIT license.</p></div>
+</div>
+<script>
+const src = document.getElementById('rawsrc').textContent;
+document.getElementById('dlbtn').href = URL.createObjectURL(new Blob([src], {type: 'text/plain'}));
+document.getElementById('copybtn').onclick = function () {
+  navigator.clipboard.writeText(src).then(() => { this.textContent = 'copied ✔'; setTimeout(() => this.textContent = 'copy code', 1500); });
+};
+</script>
+</body>
+</html>
